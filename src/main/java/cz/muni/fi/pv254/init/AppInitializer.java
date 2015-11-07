@@ -1,8 +1,13 @@
 package cz.muni.fi.pv254.init;
 
+import cz.muni.fi.pv254.entity.MalUser;
+import cz.muni.fi.pv254.repository.MalUserRepository;
+
+import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import java.util.List;
 
 /*
 import javax.servlet.ServletContextEvent;
@@ -15,8 +20,22 @@ import javax.servlet.annotation.WebListener;
 @WebListener
 class AppInitializer implements ServletContextListener {
 
+
+    @Inject
+    MalUserRepository malUserRepository;
+
     public void contextInitialized(ServletContextEvent sce) {
-        System.out.println("test");
+
+
+        List<MalUser> list = malUserRepository.findAll();
+        MalUser user = new MalUser();
+        user.setName("User" + list.size());
+        try {
+            malUserRepository.create(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        list.stream().forEach((x) -> System.out.println(x.getName()));
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {

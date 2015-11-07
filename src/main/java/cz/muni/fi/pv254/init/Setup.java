@@ -36,7 +36,6 @@ public class Setup {
      */
     @Produces
     @PersistenceContext(unitName = "PostgreSQLDS")
-    @LiquibaseType
     private EntityManager em;
 
 

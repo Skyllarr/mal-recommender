@@ -13,4 +13,10 @@
             <column name="name" type="varchar(100)"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="malr:2" author="suomiy">
+        <addColumn tableName="mal_user">
+            <column name="deleted" type="boolean"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

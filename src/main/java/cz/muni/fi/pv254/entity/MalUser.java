@@ -1,6 +1,9 @@
 package cz.muni.fi.pv254.entity;
 
 //import org.hibernate.annotations.BatchSize;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 /**
@@ -8,7 +11,9 @@ import javax.persistence.*;
  */
 //@BatchSize(size = 20)
 @Entity
-@Table(name = "user")
+@Table(name = "mal_user")
+@Getter
+@Setter
 public class MalUser extends  IdEntity{
 
     private String name;
