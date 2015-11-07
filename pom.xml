@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>MyAnimeListRecommender</groupId>
-    <artifactId>MyAnimeListRecommender</artifactId>
+    <groupId>malrecommender</groupId>
+    <artifactId>malrecommender</artifactId>
     <version>0.1</version>
     <packaging>war</packaging>
 
@@ -204,12 +204,12 @@
             </exclusions>
         </dependency>
 
-        <!-- Import the JSF API, we use provided scope as the API is included in JBoss EAP
+        <!-- Import the JSF API, we use provided scope as the API is included in JBoss EAP-->
         <dependency>
             <groupId>org.jboss.spec.javax.faces</groupId>
             <artifactId>jboss-jsf-api_2.2_spec</artifactId>
             <scope>provided</scope>
-        </dependency>-->
+        </dependency>
 
         <!--Import dependencies to hibernate packages(eg. hibernate-core)
             depending on features you want to use like Hibernate Session used in the
@@ -325,11 +325,13 @@
             <!-- http://maven.apache.org/guides/mini/guide-building-for-different-environments.html -->
             <id>openshift</id>
             <build>
+                <finalName>malrecommender</finalName>
                 <plugins>
                     <plugin>
                         <artifactId>maven-war-plugin</artifactId>
                         <version>${version.war.plugin}</version>
                         <configuration>
+                            <failOnMissingWebXml>false</failOnMissingWebXml>
                             <outputDirectory>deployments</outputDirectory>
                             <warName>ROOT</warName>
                         </configuration>

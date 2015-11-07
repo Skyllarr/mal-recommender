@@ -35,7 +35,7 @@ public class Setup {
      * Provides entity manager.
      */
     @Produces
-    @PersistenceContext(unitName = "primary")
+    @PersistenceContext(unitName = "PostgreSQLDS")
     @LiquibaseType
     private EntityManager em;
 
