@@ -9,7 +9,7 @@ import javax.persistence.*;
 //@BatchSize(size = 20)
 @Entity
 @Table(name = "user")
-public class User extends  IdEntity{
+public class MalUser extends  IdEntity{
 
     private String name;
 
