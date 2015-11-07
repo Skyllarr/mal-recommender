@@ -3,7 +3,11 @@ package cz.muni.fi.pv254.init;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-import java.io.Console;
+
+/*
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 
 /**
  * Initializes application without web.xml file.
@@ -11,13 +15,10 @@ import java.io.Console;
 @WebListener
 class AppInitializer implements ServletContextListener {
 
-    @Override
-    public void contextInitialized(ServletContextEvent event) {
-
+    public void contextInitialized(ServletContextEvent sce) {
         System.out.println("test");
     }
 
-    @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
 
     }

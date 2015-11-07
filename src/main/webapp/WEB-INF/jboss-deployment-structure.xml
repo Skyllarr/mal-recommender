@@ -1,7 +1,7 @@
 <jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
     <deployment>
         <dependencies>
-            <module name="asm.asm" />
+            <!--<module name="asm.asm" />
             <module name="org.slf4j" />
             <module name="org.slf4j.jcl-over-slf4j" />
             <module name="org.hibernate" />
@@ -19,7 +19,7 @@
             <module name="com.fasterxml.jackson.core.jackson-annotations" />
             <module name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider" />
 
-            <module name="org.jboss.resteasy.resteasy-jackson2-provider" services="import" />
+            <module name="org.jboss.resteasy.resteasy-jackson2-provider" services="import" />-->
 
         </dependencies>
     </deployment>
