@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 /**
  * Created suomiy on 11/7/15.
@@ -18,5 +20,8 @@ public class MalUser extends  IdEntity{
 
     private String name;
 
+    @Column(name = "last_seen")
+    private OffsetDateTime lastSeen;
 
+    private LocalDate birthday;
 }
