@@ -16,4 +16,9 @@
             <column name="birthday" type="date"/>
         </createTable>
     </changeSet>
+    <changeSet id="malr:2" author="suomiy">
+        <modifySql dbms="postgresql">
+            <replace replace="WITH" with="WITHOUT"/>
+        </modifySql>
+    </changeSet>
 </databaseChangeLog>
