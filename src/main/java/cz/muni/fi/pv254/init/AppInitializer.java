@@ -2,6 +2,7 @@ package cz.muni.fi.pv254.init;
 
 import cz.muni.fi.pv254.entity.MalUser;
 import cz.muni.fi.pv254.repository.MalUserRepository;
+import cz.muni.fi.pv254.utils.DomParser;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
@@ -29,8 +30,8 @@ class AppInitializer implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
 
 
-        List<MalUser> list = malUserRepository.findAll();
-        MalUser user = new MalUser();
+        //List<MalUser> list = malUserRepository.findAll();
+        /*MalUser user = new MalUser();
         user.setName("User" + list.size());
         user.setBirthday(LocalDate.of(2000,1,1) );
         user.setLastSeen(OffsetDateTime.now());
@@ -43,7 +44,13 @@ class AppInitializer implements ServletContextListener {
             System.out.println(x.getName());
             System.out.println(x.getBirthday());
             System.out.println(x.getLastSeen());
-        });
+        });*/
+
+        //create an instance
+        //DomParser dpe = new DomParser();
+
+        //call run example
+        //dpe.run();
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
