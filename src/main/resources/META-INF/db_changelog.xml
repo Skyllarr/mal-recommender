@@ -62,4 +62,8 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="malr:5" author="suomiy">
+        <addUniqueConstraint columnNames="name" tableName="mal_user"/>
+    </changeSet>
+
 </databaseChangeLog>

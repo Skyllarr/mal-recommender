@@ -19,6 +19,7 @@ import java.util.Set;
 @Table(name = "mal_user")
 @Getter
 @Setter
+@BatchSize(size =100)
 public class User extends  IdEntity{
 
     private String name;
@@ -45,7 +46,7 @@ public class User extends  IdEntity{
     }
 
     public String toString() {
-        return String.format("MalUser - name: %s, malId: %d, birthday: %s, animeEntries: %s", name , malId, birthday,
+        return String.format("User - name: %s, malId: %d, birthday: %s, animeEntries: %s", name , malId, birthday,
                 animeEntries == null ? "null" : animeEntries.size());
     }
 }
