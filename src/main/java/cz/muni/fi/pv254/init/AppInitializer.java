@@ -7,7 +7,7 @@ import cz.muni.fi.pv254.enums.AnimeEntryStatus;
 import cz.muni.fi.pv254.enums.AnimeType;
 import cz.muni.fi.pv254.repository.AnimeEntryRepository;
 import cz.muni.fi.pv254.repository.AnimeRepository;
-import cz.muni.fi.pv254.repository.MalUserRepository;
+import cz.muni.fi.pv254.repository.UserRepository;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
@@ -23,7 +23,7 @@ class AppInitializer implements ServletContextListener {
 
 
     @Inject
-    MalUserRepository malUserRepository;
+    UserRepository userRepository;
 
     @Inject
     AnimeRepository animeRepository;
@@ -34,8 +34,8 @@ class AppInitializer implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         try { //example create and find
             User user = new User("user", 1l, LocalDate.of(2000,1,1));
-            malUserRepository.create(user);
-            System.out.println(malUserRepository.findOne(user.getId()));
+            userRepository.create(user);
+            System.out.println(userRepository.findOne(user.getId()));
 
             Anime anime = new Anime("title", "http://link", 5l, 20l, AnimeType.TV);
             animeRepository.create(anime);

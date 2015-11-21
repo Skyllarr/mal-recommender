@@ -5,7 +5,7 @@ package cz.muni.fi.pv254.repository;
  */
 
 import cz.muni.fi.pv254.entity.User;
-import cz.muni.fi.pv254.entity.QMalUser;
+import cz.muni.fi.pv254.entity.QUser;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -14,13 +14,13 @@ import javax.transaction.Transactional;
 
 @ApplicationScoped
 @Transactional
-public class MalUserRepository extends Repository<User> {
-    public MalUserRepository() {
+public class UserRepository extends Repository<User> {
+    public UserRepository() {
         super();
     }
 
     @Inject
-    public MalUserRepository(EntityManager em) {
-        super(em, User.class, QMalUser.malUser);
+    public UserRepository(EntityManager em) {
+        super(em, User.class, QUser.user);
     }
 }
