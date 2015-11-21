@@ -23,4 +23,43 @@
         </sql>
     </changeSet>
 
+    <changeSet id="malr:3" author="suomiy">
+        <dropColumn tableName="mal_user" columnName="last_seen"/>
+        <addColumn tableName="mal_user">
+            <column name="mal_id" type="bigint"/>
+        </addColumn>
+
+        <createTable tableName="mal_anime">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="mal_id" type="bigint"/>
+            <column name="type" type="bigint"/>
+            <column name="episodes" type="bigint"/>
+            <column name="title" type="varchar(500)"/>
+            <column name="image_link" type="varchar(200)"/>
+            <column name="deleted" type="boolean"/>
+        </createTable>
+
+        <createTable tableName="mal_anime_entry">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="anime_id" type="bigint">
+                <constraints foreignKeyName="mal_anime" referencedTableName="mal_anime" nullable="false"/>
+            </column>
+            <column name="score" type="bigint"/>
+            <column name="status" type="bigint"/>
+            <column name="deleted" type="boolean"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="malr:4" author="suomiy">
+        <addColumn tableName="mal_anime_entry">
+            <column name="user_id" type="bigint">
+                <constraints foreignKeyName="mal_user" referencedTableName="mal_user" nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

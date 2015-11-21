@@ -1,69 +1,45 @@
 package cz.muni.fi.pv254.entity;
 
+import cz.muni.fi.pv254.enums.AnimeType;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 /**
  * Created by skylar on 20.11.15.
  */
-public class Anime {
+@Entity
+@Table(name = "mal_anime")
+@Getter
+@Setter
+public class Anime extends IdEntity{
 
-    private String series_title;
-    private int series_episodes;
-    private String series_start;
-    private String series_end;
+    private String title;
+    @Column(name = "image_link")
+    private String imageLink;
+    @Column(name = "mal_id")
+    private Long malId;
+    private Long episodes;
+    private AnimeType type;
 
-    public Anime(){
-
+    public Anime() {
+        super();
     }
 
-    public Anime(String series_title, int series_episodes, String series_start, String series_end) {
-        this.series_title = series_title;
-        this.series_episodes = series_episodes;
-        this.series_start = series_start;
-        this.series_end = series_end;
-    }
-
-    public String getTitle() {
-        return series_title;
-    }
-
-    public void setSeries_title(String series_title) {
-        this.series_title = series_title;
-    }
-
-    public int getEpisodes() {
-        return series_episodes;
-    }
-
-    public void setEpisodes(int series_episodes) {
-        this.series_episodes = series_episodes;
-    }
-
-    public String getSeries_start() {
-        return series_start;
-    }
-
-    public void setSeries_start(String series_start) {
-        this.series_start = series_start;
-    }
-
-    public String getSeries_end() {
-        return series_end;
-    }
-
-    public void setSeries_end(String series_end) {
-        this.series_end = series_end;
+    public Anime(String title, String imageLink, Long malId, Long episodes, AnimeType type) {
+        super();
+        this.title = title;
+        this.imageLink = imageLink;
+        this.malId = malId;
+        this.episodes = episodes;
+        this.type = type;
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("Anime Details - ");
-        sb.append("Name:" + getTitle());
-        sb.append(", ");
-        sb.append("Number of episodes:" + getEpisodes());
-        sb.append(", ");
-        sb.append("Start of anime:" + getSeries_start());
-        sb.append(", ");
-        sb.append("End of anime:" + getSeries_end());
-
-        return sb.toString();
+        return String.format("Anime - title: %s, imageLink %s, malId: %d, episodes: %d, type %s",
+                title, imageLink, malId, episodes, type == null ? "null" : type.name());
     }
 }

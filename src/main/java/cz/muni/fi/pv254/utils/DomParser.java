@@ -7,7 +7,7 @@ package cz.muni.fi.pv254.utils; /**
  */
 
 import cz.muni.fi.pv254.entity.Anime;
-import cz.muni.fi.pv254.entity.MalUser;
+import cz.muni.fi.pv254.entity.User;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -85,7 +85,7 @@ public class DomParser {
                 Element el = (Element)nl1.item(i);
 
                 //get the Employee object
-                MalUser e = getUser(el);
+                User e = getUser(el);
 
                 //add it to list
                 users.add(e);
@@ -109,7 +109,7 @@ public class DomParser {
     }
 
 
-    private MalUser getUser(Element empEl) {
+    private User getUser(Element empEl) {
 
         //for each <employee> element get text or int values of
         //name ,id, age and name
@@ -117,9 +117,9 @@ public class DomParser {
         int id = getIntValue(empEl, "user_id");
 
         //Create a new Employee with the value read from the xml nodes
-        MalUser u = new MalUser();
+        User u = new User();
         u.setName(name);
-        u.setUser_id(id);
+        //u.setUser_id(id);
 
         return u;
     }
@@ -134,7 +134,7 @@ public class DomParser {
         String series_end = getTextValue(empEl, "series_end");
 
         //Create a new Employee with the value read from the xml nodes
-        Anime a = new Anime(series_title, series_episodes, series_start, series_end);
+        Anime a = new Anime(/*series_title, series_episodes, series_start, series_end*/);
 
         return a;
     }
