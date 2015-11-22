@@ -5,10 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 
 /**
  * Created by suomiy on 11/21/15.
@@ -21,15 +19,17 @@ public class AnimeEntry extends IdEntity{
 
     @JoinColumn(name = "anime_id")
     @Fetch(FetchMode.SELECT)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Anime anime;
 
     @JoinColumn(name = "user_id")
     @Fetch(FetchMode.SELECT)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     private Long score;
+    @Column(name = "normalized_score")
+    private Double normalizedScore;
     private AnimeEntryStatus status;
 
     public AnimeEntry() {

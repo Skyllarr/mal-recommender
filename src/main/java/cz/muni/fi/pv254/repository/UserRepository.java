@@ -5,12 +5,14 @@ package cz.muni.fi.pv254.repository;
  */
 
 import com.mysema.query.jpa.impl.JPAQuery;
+import cz.muni.fi.pv254.entity.AnimeEntry;
 import cz.muni.fi.pv254.entity.QUser;
 import cz.muni.fi.pv254.entity.User;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import javax.transaction.Transactional;
 import java.util.List;
 

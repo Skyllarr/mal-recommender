@@ -1,5 +1,6 @@
 package cz.muni.fi.pv254.entity;
 
+import cz.muni.fi.pv254.enums.Gender;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
@@ -23,11 +24,12 @@ public class User extends  IdEntity{
     @Column(name = "mal_id")
     private Long malId;
     private LocalDate birthday;
+    private Gender gender;
 
     @OrderBy("id")
     @BatchSize(size = 100)
     @Fetch(FetchMode.SELECT)
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private Set<AnimeEntry> animeEntries;
 

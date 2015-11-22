@@ -70,4 +70,38 @@
         <addUniqueConstraint columnNames="mal_id" tableName="mal_anime"/>
     </changeSet>
 
+    <changeSet id="malr:7" author="skylar">
+        <createTable tableName="mal_genre_entry">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="anime_id" type="bigint">
+                <constraints foreignKeyName="mal_anime" referencedTableName="mal_anime" nullable="false"/>
+            </column>
+            <column name="genre" type="bigint"/>
+        </createTable>
+
+        <addColumn tableName="mal_anime">
+            <column name="popularity" type="bigint"/>
+            <column name="ranked" type="bigint"/>
+            <column name="description" type="varchar(5000)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="malr:8" author="skylar">
+        <addColumn tableName="mal_user">
+            <column name="gender" type="bigint"/>
+        </addColumn>
+        <addColumn tableName="mal_anime_entry">
+            <column name="normalized_score" type="bigint"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="malr:9" author="skylar">
+        <dropColumn tableName="mal_anime_entry" columnName="normalized_score"/>
+        <addColumn tableName="mal_anime_entry">
+            <column name="normalized_score" type="DECIMAL(7,5)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

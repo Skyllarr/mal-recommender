@@ -3,10 +3,13 @@ package cz.muni.fi.pv254.entity;
 import cz.muni.fi.pv254.enums.AnimeType;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by skylar on 20.11.15.
@@ -24,6 +27,15 @@ public class Anime extends IdEntity{
     private Long malId;
     private Long episodes;
     private AnimeType type;
+    private Long popularity;
+    private Long ranked;
+
+    @OrderBy("id")
+    @BatchSize(size = 100)
+    @Fetch(FetchMode.SELECT)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name="anime_id")
+    private Set<GenreEntry> genre;
 
     public Anime() {
         super();
