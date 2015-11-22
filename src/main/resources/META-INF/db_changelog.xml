@@ -66,4 +66,8 @@
         <addUniqueConstraint columnNames="name" tableName="mal_user"/>
     </changeSet>
 
+    <changeSet id="malr:6" author="suomiy">
+        <addUniqueConstraint columnNames="mal_id" tableName="mal_anime"/>
+    </changeSet>
+
 </databaseChangeLog>

@@ -1,5 +1,8 @@
 package cz.muni.fi.pv254.entity;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -11,8 +14,18 @@ import java.io.Serializable;
  */
 @MappedSuperclass
 public abstract class IdEntity implements Serializable {
+    @GenericGenerator(
+            name = "seq",
+            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {
+                    @Parameter(name = "sequence_name", value = "hibernate_sequence"),
+                    @Parameter(name = "initial_value", value = "1"),
+                    @Parameter(name = "increment_size", value = "500"),
+                    @Parameter(name = "optimizer", value = "hilo")
+            })
+
+    @GeneratedValue(generator = "seq", strategy=GenerationType.SEQUENCE) // @GeneratedValue(strategy=GenerationType.SEQUENCE)
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private boolean deleted = false;
 
@@ -43,6 +56,8 @@ public abstract class IdEntity implements Serializable {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+
+
 
     @Override
     public boolean equals(Object o) {

@@ -6,6 +6,8 @@ import com.mysema.query.types.path.EntityPathBase;
 import cz.muni.fi.pv254.entity.IdEntity;
 
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Repository<E extends IdEntity> {
@@ -54,5 +56,20 @@ public abstract class Repository<E extends IdEntity> {
 
     protected JPQLQuery from() {
         return new JPAQuery(em).from(entityPathBase);
+    }
+
+    public List<E> batchCreate(List<E> entities) throws Exception {
+        final List<E> savedEntities = new ArrayList<>(entities.size());
+        em.setFlushMode(FlushModeType.COMMIT);
+        for (E entity : entities) {
+            if (entity.getId() != null) {
+                throw new Exception("Create: Already exists");
+            }
+            em.persist(entity);
+        }
+        em.flush();
+        em.clear();
+        em.setFlushMode(FlushModeType.AUTO);
+        return savedEntities;
     }
 }

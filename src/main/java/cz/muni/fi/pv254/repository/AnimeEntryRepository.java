@@ -4,9 +4,7 @@ package cz.muni.fi.pv254.repository;
  * Created by suomiy on 11/7/15.
  */
 
-import cz.muni.fi.pv254.entity.Anime;
 import cz.muni.fi.pv254.entity.AnimeEntry;
-import cz.muni.fi.pv254.entity.QAnime;
 import cz.muni.fi.pv254.entity.QAnimeEntry;
 
 import javax.enterprise.context.ApplicationScoped;

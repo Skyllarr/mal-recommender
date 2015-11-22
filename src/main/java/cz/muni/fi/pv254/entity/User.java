@@ -1,6 +1,5 @@
 package cz.muni.fi.pv254.entity;
 
-//import org.hibernate.annotations.BatchSize;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
@@ -9,7 +8,6 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.Set;
 
 /**
@@ -19,7 +17,6 @@ import java.util.Set;
 @Table(name = "mal_user")
 @Getter
 @Setter
-@BatchSize(size =100)
 public class User extends  IdEntity{
 
     private String name;

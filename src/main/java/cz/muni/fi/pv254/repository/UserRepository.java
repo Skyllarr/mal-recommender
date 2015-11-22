@@ -5,8 +5,8 @@ package cz.muni.fi.pv254.repository;
  */
 
 import com.mysema.query.jpa.impl.JPAQuery;
-import cz.muni.fi.pv254.entity.User;
 import cz.muni.fi.pv254.entity.QUser;
+import cz.muni.fi.pv254.entity.User;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
