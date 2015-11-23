@@ -1,5 +1,6 @@
 package cz.muni.fi.pv254.entity;
 
+import com.google.gson.annotations.SerializedName;
 import cz.muni.fi.pv254.enums.AnimeEntryStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,10 +12,14 @@ import lombok.Setter;
 @Setter
 public class AnimeEntry{
 
+    @SerializedName("m")
     private Long malAnimeId;
 
+    @SerializedName("s")
     private Long score;
+    @SerializedName("n")
     private Double normalizedScore;
+    @SerializedName("t")
     private AnimeEntryStatus status;
 
     public AnimeEntry() {

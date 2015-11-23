@@ -40,7 +40,7 @@ public class AnimeListParser {
 
     private AnimeCacher animeCacher;
 
-    private static final String listsFolder = "/home/ansy/Downloads/mal_data/test"; // allLists
+    private static final String listsFolder = "/home/ansy/Downloads/mal_data/allLists"; //
     private static final String logFile = "/home/ansy/Downloads/mal_data/processed";
 
     private PrintWriter logger;
