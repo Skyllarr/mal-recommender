@@ -1,15 +1,15 @@
 package cz.muni.fi.pv254.entity;
 
+import cz.muni.fi.pv254.dataUtils.JsonParser;
 import cz.muni.fi.pv254.enums.AnimeType;
+import cz.muni.fi.pv254.enums.Genre;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by skylar on 20.11.15.
@@ -18,30 +18,25 @@ import java.util.Set;
 @Table(name = "mal_anime")
 @Getter
 @Setter
-public class Anime extends IdEntity{
+public class DbAnime extends IdEntity{
 
     private String title;
     @Column(name = "image_link")
     private String imageLink;
     @Column(name = "mal_id")
     private Long malId;
+    @Column(name = "genre_entries")
+    private String genreEntries;
     private Long episodes;
     private AnimeType type;
     private Long popularity;
     private Long ranked;
 
-    @OrderBy("id")
-    @BatchSize(size = 100)
-    @Fetch(FetchMode.SELECT)
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name="anime_id")
-    private Set<GenreEntry> genre;
-
-    public Anime() {
+    public DbAnime() {
         super();
     }
 
-    public Anime(String title, String imageLink, Long malId, Long episodes, AnimeType type) {
+    public DbAnime(String title, String imageLink, Long malId, Long episodes, AnimeType type) {
         super();
         this.title = title;
         this.imageLink = imageLink;
@@ -50,8 +45,16 @@ public class Anime extends IdEntity{
         this.type = type;
     }
 
+    public List<Genre> getGenreEntriesAsList() {
+        return JsonParser.loadAsGenre(genreEntries);
+    }
+
+    public void setGenreEntriesAsString(List<Genre> genre) {
+        this.genreEntries = JsonParser.save(genre);
+    }
+
     public String toString() {
-        return String.format("Anime - title: %s, imageLink %s, malId: %d, episodes: %d, type %s",
+        return String.format("DbAnime - title: %s, imageLink %s, malId: %d, episodes: %d, type %s",
                 title, imageLink, malId, episodes, type == null ? "null" : type.name());
     }
 }

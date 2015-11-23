@@ -1,13 +1,15 @@
 package cz.muni.fi.pv254.algorithms;
 
+import cz.muni.fi.pv254.dataUtils.DataQueries;
 import cz.muni.fi.pv254.entity.AnimeEntry;
-import cz.muni.fi.pv254.entity.User;
-import cz.muni.fi.pv254.repository.UserRepository;
-//import cz.muni.fi.pv254.repository.AnimeEntryRepository;
+import cz.muni.fi.pv254.entity.DbUser;
+import cz.muni.fi.pv254.repository.DbUserRepository;
 
 import javax.inject.Inject;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.OptionalDouble;
+
 
 /**
  * Created by skylar on 22.11.15.
@@ -16,48 +18,45 @@ public class Normalizer {
 
 
     @Inject
-    UserRepository userRepository;
+    DbUserRepository dbUserRepository;
 
     public Normalizer () {
 
     }
 
+    @Inject
+    DataQueries dataQueries;
 
     public void normalize() {
-        List<User>  users = userRepository.findAll();
-        Map<User, List<AnimeEntry>>  usersEntries = new HashMap<>();
-        List<AnimeEntry>  entries = new ArrayList<>();
+        List<AnimeEntry>  entries = dataQueries.getAnimeEntriesWithScore();
+        Map<DbUser, List<AnimeEntry>> usersEntries = dataQueries.getUsersWithEntriesWithScore();
 
-        for(User user : users){
-            List<AnimeEntry> list =  user.getAnimeEntriesAsList()
-                    .stream()
-                    .filter(a -> a.getScore() > 0)
-                    .collect(Collectors.toList());
+        Double average = calculateAverage(entries);
 
-            usersEntries.put(user, list);
-            entries.addAll(list);
-        }
+        for(DbUser dbUser : usersEntries.keySet()){
+            List<AnimeEntry> animeEntries = usersEntries.get(dbUser);
+            Double userAverage = calculateAverage(animeEntries);
 
-        OptionalDouble average = entries.stream()
-                .mapToDouble( a -> (double) a.getScore() )
-                .average();;
-
-        if(!average.isPresent()){
-            return;
-        }
-
-
-        for(User user : usersEntries.keySet()){
-            List<AnimeEntry> animeEntries = usersEntries.get(user);
-            OptionalDouble userAverage = animeEntries.stream()
-                    .mapToDouble( a -> (double) a.getScore() )
-                    .average();
-
-            Double normalizationValue = userAverage.isPresent() ? average.getAsDouble() / userAverage.getAsDouble() : 1;
+            Double normalizationValue = average / userAverage;
 
             animeEntries.stream().forEach( a -> a.setNormalizedScore( a.getScore() * normalizationValue));
 
-            user.setAnimeEntriesAsString(animeEntries);
+            dbUser.setAnimeEntriesAsString(animeEntries);
         }
+    }
+
+    private Double calculateAverage(List<AnimeEntry> list){
+        if(list == null || list.size() == 0){
+            throw new IllegalArgumentException("Bad Argument list");
+        }
+        OptionalDouble average = list.stream()
+                .mapToDouble( a -> (double) a.getScore() )
+                .average();
+
+        if(!average.isPresent()){
+            throw new IllegalArgumentException("Bad Argument list");
+        }
+
+        return average.getAsDouble();
     }
 }

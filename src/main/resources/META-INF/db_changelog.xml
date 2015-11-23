@@ -125,4 +125,15 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="malr:13" author="skylar">
+        <addColumn tableName="mal_anime">
+            <column name="genre_entries" type="varchar(150)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="malr:14" author="skylar">
+        <dropTable tableName="mal_genre_entry"/>
+        <dropTable tableName="mal_anime_entry"/>
+    </changeSet>
+
 </databaseChangeLog>

@@ -4,10 +4,10 @@ package cz.muni.fi.pv254.repository;
  * Created by suomiy on 11/7/15.
  */
 /*
-import cz.muni.fi.pv254.entity.Anime;
+import cz.muni.fi.pv254.entity.DbAnime;
 import cz.muni.fi.pv254.entity.AnimeEntry;
 import cz.muni.fi.pv254.entity.QAnimeEntry;
-import cz.muni.fi.pv254.entity.User;
+import cz.muni.fi.pv254.entity.DbUser;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -22,10 +22,10 @@ import java.util.List;
 public class AnimeEntryRepository extends Repository<AnimeEntry> {
 
     @Inject
-    UserRepository userRepository;
+    DbUserRepository userRepository;
 
     @Inject
-    AnimeRepository animeRepository;
+    DbAnimeRepository animeRepository;
 
     public AnimeEntryRepository() {
         super();
@@ -37,14 +37,14 @@ public class AnimeEntryRepository extends Repository<AnimeEntry> {
     }
 
     public List<AnimeEntry> batchfindAll() {
-        List<Anime> animes = animeRepository.findAll();
-        List<User> users = userRepository.findAll();
+        List<DbAnime> animes = animeRepository.findAll();
+        List<DbUser> users = userRepository.findAll();
 
         List<AnimeEntry> animeEntries = new ArrayList<>();
 
         em.setFlushMode(FlushModeType.COMMIT);
 
-        for (User user : users) {
+        for (DbUser user : users) {
             animeEntries.addAll(user.getAnimeEntries());
         }
         em.flush();

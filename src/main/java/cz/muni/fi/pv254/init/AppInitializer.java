@@ -1,5 +1,7 @@
 package cz.muni.fi.pv254.init;
 
+import cz.muni.fi.pv254.entity.User;
+import cz.muni.fi.pv254.repository.DbUserRepository;
 import cz.muni.fi.pv254.repository.UserRepository;
 import cz.muni.fi.pv254.utils.AnimeListParser;
 import cz.muni.fi.pv254.utils.StatisticsUtils;
@@ -19,17 +21,13 @@ class AppInitializer implements ServletContextListener {
     StatisticsUtils stats;
 
     @Inject
-       AnimeListParser animeListParser;
-
+    AnimeListParser animeListParser;
 
     @Inject
     UserRepository userRepository;
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        //Normalizer normalizer = new Normalizer(animeEntryRepository);
-        //normalizer.normalize();
-        //stats.showAverageAgeOfUsers();
-        animeListParser.run();
+
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {

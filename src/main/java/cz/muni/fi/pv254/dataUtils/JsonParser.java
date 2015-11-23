@@ -1,8 +1,9 @@
-package cz.muni.fi.pv254.utils;
+package cz.muni.fi.pv254.dataUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import cz.muni.fi.pv254.entity.AnimeEntry;
+import cz.muni.fi.pv254.enums.Genre;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -14,14 +15,21 @@ import java.util.List;
 public class JsonParser {
 
 
-    public static String save(List<AnimeEntry> entries){
+    public static String save(List<?> entries){
         Gson gson = new Gson();
         return gson.toJson(entries);
     }
 
-    public static List<AnimeEntry> load(String entries){
+    public static List<AnimeEntry> loadAsAnimeEntry(String entries){
         Gson gson = new Gson();
         Type listType = new TypeToken<ArrayList<AnimeEntry>>() {
+        }.getType();
+        return (entries == null || "".equals(entries)) ?  new ArrayList<>() : gson.fromJson(entries, listType);
+    }
+
+    public static List<Genre> loadAsGenre(String entries){
+        Gson gson = new Gson();
+        Type listType = new TypeToken<ArrayList<Genre>>() {
         }.getType();
         return (entries == null || "".equals(entries)) ?  new ArrayList<>() : gson.fromJson(entries, listType);
     }

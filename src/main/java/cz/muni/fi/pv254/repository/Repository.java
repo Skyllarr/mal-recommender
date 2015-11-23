@@ -4,9 +4,6 @@ import com.mysema.query.jpa.JPQLQuery;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.path.EntityPathBase;
 import cz.muni.fi.pv254.entity.IdEntity;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.StatelessSession;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;

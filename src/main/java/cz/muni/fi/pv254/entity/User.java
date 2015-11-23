@@ -1,57 +1,94 @@
 package cz.muni.fi.pv254.entity;
 
 import cz.muni.fi.pv254.enums.Gender;
-import cz.muni.fi.pv254.utils.JsonParser;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
- * Created by suomiy on 11/7/15.
+ * Created by skylar on 23.11.15.
  */
-@Entity
-@Table(name = "mal_user")
-@Getter
-@Setter
-public class User extends  IdEntity{
+public class User {
 
-    private String name;
-    @Column(name = "mal_id")
-    private Long malId;
-    private LocalDate birthday;
-    private Gender gender;
-    @Column(name = "anime_entries")
-    private String animeEntries;
+    private DbUser dbUser;
+    private List<AnimeEntry> animeEntries;
 
     public User() {
-        super();
+        dbUser = new DbUser();
+        animeEntries = new ArrayList<>();
     }
 
-    public User(String name, Long malId, LocalDate birthday) {
-        super();
-        this.name = name;
-        this.malId = malId;
-        this.birthday = birthday;
+    public User(DbUser dbUser) {
+        this.dbUser = dbUser;
+        this.animeEntries = dbUser.getAnimeEntriesAsList();
     }
 
-    public List<AnimeEntry> getAnimeEntriesAsList() {
-        return JsonParser.load(animeEntries);
+    public String getName() {
+        return dbUser.getName();
     }
 
-    public void setAnimeEntriesAsString(List<AnimeEntry> animeEntries) {
-        this.animeEntries = JsonParser.save(animeEntries);
+    public void setName(String name) {
+        this.dbUser.setName(name);
+    }
+
+    public Gender getGender() {
+        return dbUser.getGender();
+    }
+
+    public void setGender(Gender gender) {
+        this.dbUser.setGender(gender);
+    }
+
+    public LocalDate getBirthday() {
+        return dbUser.getBirthday();
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        this.dbUser.setBirthday(birthday);
+    }
+
+    public Long getMalId() {
+        return dbUser.getMalId();
+    }
+
+    public void setMalId(Long malId) {
+        this.dbUser.setMalId(malId);
+    }
+
+    public List<AnimeEntry> getAnimeEntries() {
+        return animeEntries;
+    }
+
+    public void setAnimeEntries(List<AnimeEntry> animeEntries) {
+        this.animeEntries = animeEntries;
+    }
+
+    public DbUser getDbUser() {
+        return dbUser;
+    }
+
+    public void setDbUser(DbUser dbUser) {
+        this.dbUser = dbUser;
+    }
+
+    public Long getId() {
+        return dbUser.getId();
+    }
+
+    public void setId(Long id) {
+        dbUser.setId(id);
+    }
+
+    public boolean isDeleted() {
+        return dbUser.isDeleted();
+    }
+
+    public void setDeleted(boolean deleted) {
+        dbUser.setDeleted(deleted);
     }
 
     public String toString() {
-        return String.format("User - name: %s, malId: %d, birthday: %s, animeEntries: %s", name , malId, birthday,
-                animeEntries == null ? "null" : animeEntries.length());
+        return dbUser.toString() + ", animeEntries: " + animeEntries.size();
     }
-
 }

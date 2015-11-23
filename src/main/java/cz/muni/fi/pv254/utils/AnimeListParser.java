@@ -6,13 +6,14 @@ package cz.muni.fi.pv254.utils; /**
  * Created by skylar on 20.11.15.
  */
 
-import cz.muni.fi.pv254.entity.Anime;
+import cz.muni.fi.pv254.dataUtils.AnimeCacher;
 import cz.muni.fi.pv254.entity.AnimeEntry;
-import cz.muni.fi.pv254.entity.User;
+import cz.muni.fi.pv254.entity.DbAnime;
+import cz.muni.fi.pv254.entity.DbUser;
 import cz.muni.fi.pv254.enums.AnimeEntryStatus;
 import cz.muni.fi.pv254.enums.AnimeType;
-import cz.muni.fi.pv254.repository.AnimeRepository;
-import cz.muni.fi.pv254.repository.UserRepository;
+import cz.muni.fi.pv254.repository.DbAnimeRepository;
+import cz.muni.fi.pv254.repository.DbUserRepository;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -33,10 +34,10 @@ import java.util.List;
 public class AnimeListParser {
 
     @Inject
-    UserRepository userRepository;
+    DbUserRepository dbUserRepository;
 
     @Inject
-    AnimeRepository animeRepository;
+    DbAnimeRepository dbAnimeRepository;
 
     private AnimeCacher animeCacher;
 
@@ -47,7 +48,7 @@ public class AnimeListParser {
 
     public void run() {
         try{
-            animeCacher = new AnimeCacher(animeRepository);
+            animeCacher = new AnimeCacher(dbAnimeRepository);
             logger = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
             File[] files = new File(listsFolder).listFiles();
 
@@ -82,74 +83,74 @@ public class AnimeListParser {
         Element root = dom.getDocumentElement();
 
         NodeList myInfos = root.getElementsByTagName("myinfo");
-        User user = userRepository.findByName(name);
+        DbUser dbUser = dbUserRepository.findByName(name);
 
-        if(user == null){
-            log("User" + name + " not found!");
+        if(dbUser == null){
+            log("DbUser" + name + " not found!");
             return;
         }
 
         if(myInfos == null || myInfos.getLength() == 0){
-            log("User " + name + " deleted.");
-            try { userRepository.delete(user.getId()); } catch (Exception e) { e.printStackTrace(); }
+            log("DbUser " + name + " deleted.");
+            try { dbUserRepository.delete(dbUser.getId()); } catch (Exception e) { e.printStackTrace(); }
             return;
         }
 
         for(int i = 0 ; i < myInfos.getLength(); i++) {
-            updateUser(user, (Element)myInfos.item(i));
+            updateUser(dbUser, (Element)myInfos.item(i));
         }
 
 
-        NodeList animes = root.getElementsByTagName("anime");
+        NodeList animes = root.getElementsByTagName("dbAnime");
 
         if(animes == null || animes.getLength() == 0){
             return;
         }
 
-        List<AnimeEntry> usersAnimeEntries = user.getAnimeEntriesAsList();
+        List<AnimeEntry> usersAnimeEntries = dbUser.getAnimeEntriesAsList();
 
         for(int i = 0 ; i < animes.getLength(); i++) {
             processAnime(usersAnimeEntries, (Element)animes.item(i));
         }
-        user.setAnimeEntriesAsString(usersAnimeEntries);
+        dbUser.setAnimeEntriesAsString(usersAnimeEntries);
 
-        userRepository.update(user);
+        dbUserRepository.update(dbUser);
         animeCacher.flush();
     }
 
 
-    private void updateUser(User user, Element userElement) throws IllegalAccessException {
+    private void updateUser(DbUser dbUser, Element userElement) throws IllegalAccessException {
 
         String name = getTextValue(userElement, "user_name");
 
-        if(!name.equals(user.getName())){
-            log("Invalid username for user" + user.getName() + " is " + name + "!");
-            throw new IllegalArgumentException(user.getName() + " vs " + name);
+        if(!name.equals(dbUser.getName())){
+            log("Invalid username for dbUser" + dbUser.getName() + " is " + name + "!");
+            throw new IllegalArgumentException(dbUser.getName() + " vs " + name);
         }
 
         int id = getIntValue(userElement, "user_id");
 
-        user.setMalId((long) id);
+        dbUser.setMalId((long) id);
     }
 
     private void processAnime(List<AnimeEntry> usersAnimeEntries, Element animeElem) throws Exception {
         Long malId = (long) getIntValue(animeElem, "series_animedb_id");
-        Anime anime = animeCacher.findByMalId(malId);
+        DbAnime dbAnime = animeCacher.findByMalId(malId);
 
-        if(anime == null) {
+        if(dbAnime == null) {
             String title = getTextValue(animeElem, "series_title");
             String imageLink = getTextValue(animeElem, "series_image");
 
             Long episodes = (long) getIntValue(animeElem, "series_episodes");
             AnimeType type = AnimeType.get(getIntValue(animeElem, "series_type"));
 
-            anime = new Anime(title, imageLink, malId, episodes, type);
-            animeCacher.create(anime);
+            dbAnime = new DbAnime(title, imageLink, malId, episodes, type);
+            animeCacher.create(dbAnime);
         }
 
         AnimeEntryStatus status =  AnimeEntryStatus.get(getIntValue(animeElem, "my_status"));
         Long score = (long) getIntValue(animeElem, "my_score");
-        usersAnimeEntries.add(new AnimeEntry(anime.getMalId(), score, status));
+        usersAnimeEntries.add(new AnimeEntry(dbAnime.getMalId(), score, status));
 
     }
 

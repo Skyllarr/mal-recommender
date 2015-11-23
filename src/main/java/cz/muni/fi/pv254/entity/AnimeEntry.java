@@ -34,7 +34,7 @@ public class AnimeEntry{
     }
 
     public String toString() {
-        return String.format("AnimeEntry - anime's mal id: %s, score: %d, status %s",
+        return String.format("AnimeEntry - dbAnime's mal id: %s, score: %d, status %s",
                 malAnimeId,
                 score,
                 status == null ? "null" : status.name());
