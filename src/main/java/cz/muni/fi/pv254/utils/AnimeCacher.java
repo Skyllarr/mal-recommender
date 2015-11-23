@@ -16,19 +16,16 @@ import java.util.Map;
 public class AnimeCacher {
 
     private AnimeRepository animeRepository;
-    //private AnimeEntryRepository animeEntryRepository;
 
     final List<Anime> animeBatch = new ArrayList<>();
-    final List<AnimeEntry> animeEntryBatch = new ArrayList<>();
 
     private static final Map<Long , Anime> animeMap =  new HashMap<>();
 
-   /* public AnimeCacher(AnimeRepository animeRepository,AnimeEntryRepository animeEntryRepository) {
+    public AnimeCacher(AnimeRepository animeRepository) {
         this.animeRepository = animeRepository;
-        this.animeEntryRepository = animeEntryRepository;
 
         animeRepository.findAll().stream().forEach(a ->  animeMap.put(a.getMalId(), a));
-    }*/
+    }
 
     public Anime findByMalId(Long malId) {
         return animeMap.get(malId);
@@ -39,19 +36,13 @@ public class AnimeCacher {
         animeBatch.add(anime);
     }
 
-    public void create(AnimeEntry animeEntry){
-        animeEntryBatch.add(animeEntry);
-    }
-
     public void flush(){
         try {
             animeRepository.batchCreate(animeBatch);
-           // animeEntryRepository.batchCreate(animeEntryBatch);
         } catch (Exception e) {
             e.printStackTrace();
         }
         animeBatch.clear();
-        animeEntryBatch.clear();
     }
 }
 

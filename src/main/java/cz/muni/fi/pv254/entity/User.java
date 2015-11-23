@@ -1,6 +1,7 @@
 package cz.muni.fi.pv254.entity;
 
 import cz.muni.fi.pv254.enums.Gender;
+import cz.muni.fi.pv254.utils.JsonParser;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,7 +27,7 @@ public class User extends  IdEntity{
     private Long malId;
     private LocalDate birthday;
     private Gender gender;
-
+    @Column(name = "anime_entries")
     private String animeEntries;
 
     public User() {
@@ -39,8 +41,17 @@ public class User extends  IdEntity{
         this.birthday = birthday;
     }
 
+    public List<AnimeEntry> getAnimeEntriesAsList() {
+        return JsonParser.load(animeEntries);
+    }
+
+    public void setAnimeEntriesAsString(List<AnimeEntry> animeEntries) {
+        this.animeEntries = JsonParser.save(animeEntries);
+    }
+
     public String toString() {
         return String.format("User - name: %s, malId: %d, birthday: %s, animeEntries: %s", name , malId, birthday,
                 animeEntries == null ? "null" : animeEntries.length());
     }
+
 }

@@ -2,7 +2,6 @@ package cz.muni.fi.pv254.utils;
 
 import cz.muni.fi.pv254.entity.User;
 import cz.muni.fi.pv254.enums.Gender;
-//import cz.muni.fi.pv254.repository.AnimeEntryRepository;
 import cz.muni.fi.pv254.repository.AnimeRepository;
 import cz.muni.fi.pv254.repository.UserRepository;
 
@@ -24,8 +23,6 @@ public class StatisticsUtils {
     @Inject
     AnimeRepository animeRepository;
 
-    //@Inject
-    //AnimeEntryRepository animeEntryRepository;
 
     public double getAverageAge(List<User> users) {
         int total = 0;

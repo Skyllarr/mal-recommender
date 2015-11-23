@@ -2,8 +2,10 @@ package cz.muni.fi.pv254.algorithms;
 
 import cz.muni.fi.pv254.entity.AnimeEntry;
 import cz.muni.fi.pv254.entity.User;
+import cz.muni.fi.pv254.repository.UserRepository;
 //import cz.muni.fi.pv254.repository.AnimeEntryRepository;
 
+import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -11,18 +13,30 @@ import java.util.stream.Collectors;
  * Created by skylar on 22.11.15.
  */
 public class Normalizer {
-    //private AnimeEntryRepository animeEntryRepository;
 
-    //public Normalizer (AnimeEntryRepository animeEntryRepository) {
-        //this.animeEntryRepository = animeEntryRepository;
+
+    @Inject
+    UserRepository userRepository;
+
+    public Normalizer () {
+
+    }
 
 
     public void normalize() {
-        //List<AnimeEntry>  entries = animeEntryRepository.findAll();
-        //System.out.print("a");
-     /*           .stream()
-                .filter(a -> a.getScore() > 0)
-                .collect(Collectors.toList());
+        List<User>  users = userRepository.findAll();
+        Map<User, List<AnimeEntry>>  usersEntries = new HashMap<>();
+        List<AnimeEntry>  entries = new ArrayList<>();
+
+        for(User user : users){
+            List<AnimeEntry> list =  user.getAnimeEntriesAsList()
+                    .stream()
+                    .filter(a -> a.getScore() > 0)
+                    .collect(Collectors.toList());
+
+            usersEntries.put(user, list);
+            entries.addAll(list);
+        }
 
         OptionalDouble average = entries.stream()
                 .mapToDouble( a -> (double) a.getScore() )
@@ -32,30 +46,18 @@ public class Normalizer {
             return;
         }
 
-        Map<User,Set<AnimeEntry>>  usersEntries = new HashMap<>();
-
-        for(AnimeEntry entry : entries){
-            User user = entry.getUser();
-            Set<AnimeEntry> set;
-
-            if(usersEntries.containsKey(user)) {
-                set = usersEntries.get(user);
-            }else{
-                set = new HashSet<>();
-                usersEntries.put(user, set);
-            }
-            set.add(entry);
-        }
 
         for(User user : usersEntries.keySet()){
-            Set<AnimeEntry> set = usersEntries.get(user);
-            OptionalDouble userAverage = set.stream()
+            List<AnimeEntry> animeEntries = usersEntries.get(user);
+            OptionalDouble userAverage = animeEntries.stream()
                     .mapToDouble( a -> (double) a.getScore() )
-                    .average();;
+                    .average();
 
             Double normalizationValue = userAverage.isPresent() ? average.getAsDouble() / userAverage.getAsDouble() : 1;
 
-            set.stream().forEach( a -> a.setNormalizedScore( a.getScore() * normalizationValue));
-        }*/
+            animeEntries.stream().forEach( a -> a.setNormalizedScore( a.getScore() * normalizationValue));
+
+            user.setAnimeEntriesAsString(animeEntries);
+        }
     }
 }

@@ -117,4 +117,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="malr:12" author="skylar">
+        <dropColumn tableName="mal_anime" columnName="anime_entries"/>
+
+        <addColumn tableName="mal_user">
+            <column name="anime_entries" type="varchar(500000)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

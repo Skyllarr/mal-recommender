@@ -7,6 +7,7 @@ package cz.muni.fi.pv254.utils; /**
  */
 
 import cz.muni.fi.pv254.entity.Anime;
+import cz.muni.fi.pv254.entity.AnimeEntry;
 import cz.muni.fi.pv254.entity.User;
 import cz.muni.fi.pv254.enums.AnimeEntryStatus;
 import cz.muni.fi.pv254.enums.AnimeType;
@@ -25,8 +26,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
-//import cz.muni.fi.pv254.repository.AnimeEntryRepository;
 
 @ApplicationScoped
 public class AnimeListParser {
@@ -37,19 +38,16 @@ public class AnimeListParser {
     @Inject
     AnimeRepository animeRepository;
 
-   // @Inject
-    //AnimeEntryRepository animeEntryRepository;
-
     private AnimeCacher animeCacher;
 
-    private static final String listsFolder = "/home/ansy/Downloads/mal_data/test"; //allLists
+    private static final String listsFolder = "/home/ansy/Downloads/mal_data/test"; // allLists
     private static final String logFile = "/home/ansy/Downloads/mal_data/processed";
 
     private PrintWriter logger;
 
     public void run() {
         try{
-            //animeCacher = new AnimeCacher(animeRepository, animeEntryRepository);
+            animeCacher = new AnimeCacher(animeRepository);
             logger = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
             File[] files = new File(listsFolder).listFiles();
 
@@ -108,10 +106,14 @@ public class AnimeListParser {
             return;
         }
 
-        for(int i = 0 ; i < animes.getLength(); i++) {
-            processAnime(user, (Element)animes.item(i));
-        }
+        List<AnimeEntry> usersAnimeEntries = user.getAnimeEntriesAsList();
 
+        for(int i = 0 ; i < animes.getLength(); i++) {
+            processAnime(usersAnimeEntries, (Element)animes.item(i));
+        }
+        user.setAnimeEntriesAsString(usersAnimeEntries);
+
+        userRepository.update(user);
         animeCacher.flush();
     }
 
@@ -128,10 +130,9 @@ public class AnimeListParser {
         int id = getIntValue(userElement, "user_id");
 
         user.setMalId((long) id);
-        userRepository.update(user);
     }
 
-    private void processAnime(User user, Element animeElem) throws Exception {
+    private void processAnime(List<AnimeEntry> usersAnimeEntries, Element animeElem) throws Exception {
         Long malId = (long) getIntValue(animeElem, "series_animedb_id");
         Anime anime = animeCacher.findByMalId(malId);
 
@@ -148,8 +149,7 @@ public class AnimeListParser {
 
         AnimeEntryStatus status =  AnimeEntryStatus.get(getIntValue(animeElem, "my_status"));
         Long score = (long) getIntValue(animeElem, "my_score");
-
-       // animeCacher.create(new AnimeEntry(anime,user,score,status));
+        usersAnimeEntries.add(new AnimeEntry(anime.getMalId(), score, status));
 
     }
 
