@@ -3,7 +3,7 @@ package cz.muni.fi.pv254.repository;
 /**
  * Created by suomiy on 11/7/15.
  */
-
+/*
 import cz.muni.fi.pv254.entity.Anime;
 import cz.muni.fi.pv254.entity.AnimeEntry;
 import cz.muni.fi.pv254.entity.QAnimeEntry;
@@ -52,4 +52,4 @@ public class AnimeEntryRepository extends Repository<AnimeEntry> {
         em.setFlushMode(FlushModeType.AUTO);
         return animeEntries;
     }
-}
+}*/

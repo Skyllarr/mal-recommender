@@ -2,7 +2,7 @@ package cz.muni.fi.pv254.algorithms;
 
 import cz.muni.fi.pv254.entity.AnimeEntry;
 import cz.muni.fi.pv254.entity.User;
-import cz.muni.fi.pv254.repository.AnimeEntryRepository;
+//import cz.muni.fi.pv254.repository.AnimeEntryRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
  * Created by skylar on 22.11.15.
  */
 public class Normalizer {
-    private AnimeEntryRepository animeEntryRepository;
+    //private AnimeEntryRepository animeEntryRepository;
 
-    public Normalizer (AnimeEntryRepository animeEntryRepository) {
-        this.animeEntryRepository = animeEntryRepository;
-    }
+    //public Normalizer (AnimeEntryRepository animeEntryRepository) {
+        //this.animeEntryRepository = animeEntryRepository;
+
 
     public void normalize() {
         //List<AnimeEntry>  entries = animeEntryRepository.findAll();

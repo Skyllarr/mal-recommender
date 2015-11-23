@@ -26,12 +26,7 @@ public class User extends  IdEntity{
     private LocalDate birthday;
     private Gender gender;
 
-    @OrderBy("id")
-    @BatchSize(size = 100)
-    @Fetch(FetchMode.SELECT)
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
-    private Set<AnimeEntry> animeEntries;
+    private String animeEntries;
 
     public User() {
         super();
@@ -46,6 +41,6 @@ public class User extends  IdEntity{
 
     public String toString() {
         return String.format("User - name: %s, malId: %d, birthday: %s, animeEntries: %s", name , malId, birthday,
-                animeEntries == null ? "null" : animeEntries.size());
+                animeEntries == null ? "null" : animeEntries.length());
     }
 }

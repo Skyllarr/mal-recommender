@@ -7,11 +7,9 @@ package cz.muni.fi.pv254.utils; /**
  */
 
 import cz.muni.fi.pv254.entity.Anime;
-import cz.muni.fi.pv254.entity.AnimeEntry;
 import cz.muni.fi.pv254.entity.User;
 import cz.muni.fi.pv254.enums.AnimeEntryStatus;
 import cz.muni.fi.pv254.enums.AnimeType;
-import cz.muni.fi.pv254.repository.AnimeEntryRepository;
 import cz.muni.fi.pv254.repository.AnimeRepository;
 import cz.muni.fi.pv254.repository.UserRepository;
 import org.w3c.dom.Document;
@@ -28,6 +26,8 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+//import cz.muni.fi.pv254.repository.AnimeEntryRepository;
+
 @ApplicationScoped
 public class AnimeListParser {
 
@@ -37,8 +37,8 @@ public class AnimeListParser {
     @Inject
     AnimeRepository animeRepository;
 
-    @Inject
-    AnimeEntryRepository animeEntryRepository;
+   // @Inject
+    //AnimeEntryRepository animeEntryRepository;
 
     private AnimeCacher animeCacher;
 
@@ -49,7 +49,7 @@ public class AnimeListParser {
 
     public void run() {
         try{
-            animeCacher = new AnimeCacher(animeRepository, animeEntryRepository);
+            //animeCacher = new AnimeCacher(animeRepository, animeEntryRepository);
             logger = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
             File[] files = new File(listsFolder).listFiles();
 
@@ -149,7 +149,7 @@ public class AnimeListParser {
         AnimeEntryStatus status =  AnimeEntryStatus.get(getIntValue(animeElem, "my_status"));
         Long score = (long) getIntValue(animeElem, "my_score");
 
-        animeCacher.create(new AnimeEntry(anime,user,score,status));
+       // animeCacher.create(new AnimeEntry(anime,user,score,status));
 
     }
 

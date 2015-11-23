@@ -2,7 +2,7 @@ package cz.muni.fi.pv254.utils;
 
 import cz.muni.fi.pv254.entity.Anime;
 import cz.muni.fi.pv254.entity.AnimeEntry;
-import cz.muni.fi.pv254.repository.AnimeEntryRepository;
+//import cz.muni.fi.pv254.repository.AnimeEntryRepository;
 import cz.muni.fi.pv254.repository.AnimeRepository;
 
 import java.util.ArrayList;
@@ -16,19 +16,19 @@ import java.util.Map;
 public class AnimeCacher {
 
     private AnimeRepository animeRepository;
-    private AnimeEntryRepository animeEntryRepository;
+    //private AnimeEntryRepository animeEntryRepository;
 
     final List<Anime> animeBatch = new ArrayList<>();
     final List<AnimeEntry> animeEntryBatch = new ArrayList<>();
 
     private static final Map<Long , Anime> animeMap =  new HashMap<>();
 
-    public AnimeCacher(AnimeRepository animeRepository,AnimeEntryRepository animeEntryRepository) {
+   /* public AnimeCacher(AnimeRepository animeRepository,AnimeEntryRepository animeEntryRepository) {
         this.animeRepository = animeRepository;
         this.animeEntryRepository = animeEntryRepository;
 
         animeRepository.findAll().stream().forEach(a ->  animeMap.put(a.getMalId(), a));
-    }
+    }*/
 
     public Anime findByMalId(Long malId) {
         return animeMap.get(malId);
@@ -46,7 +46,7 @@ public class AnimeCacher {
     public void flush(){
         try {
             animeRepository.batchCreate(animeBatch);
-            animeEntryRepository.batchCreate(animeEntryBatch);
+           // animeEntryRepository.batchCreate(animeEntryBatch);
         } catch (Exception e) {
             e.printStackTrace();
         }
