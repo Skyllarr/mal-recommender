@@ -1,13 +1,11 @@
 package cz.muni.fi.pv254.utils;
 
-import cz.muni.fi.pv254.dataUtils.DataQueries;
-import cz.muni.fi.pv254.entity.AnimeEntry;
-import cz.muni.fi.pv254.entity.DbAnime;
-import cz.muni.fi.pv254.entity.DbUser;
-import cz.muni.fi.pv254.enums.Gender;
-import cz.muni.fi.pv254.enums.Genre;
-import cz.muni.fi.pv254.repository.DbAnimeRepository;
-import cz.muni.fi.pv254.repository.DbUserRepository;
+import cz.muni.fi.pv254.data.Anime;
+import cz.muni.fi.pv254.data.AnimeEntry;
+import cz.muni.fi.pv254.data.User;
+import cz.muni.fi.pv254.data.enums.Gender;
+import cz.muni.fi.pv254.data.enums.Genre;
+import cz.muni.fi.pv254.dataUtils.DataStore;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -25,18 +23,19 @@ import java.util.stream.Collectors;
 public class StatisticsUtils {
 
     @Inject
-    DbUserRepository dbUserRepository;
+    DataStore dataStore;
 
-    @Inject
-    DbAnimeRepository dbAnimeRepository;
-
-    List<DbUser> dbUsers;
-    List<DbAnime> dbAnimes;
+    List<User> users;
+    List<Anime> animes;
 
     public StatisticsUtils() {
-//        dbUsers = dbUserRepository.findAll();
-//        dbAnimes = dbAnimeRepository.findAll();
     }
+
+    public void init() {
+        users = dataStore.findAllUsers();
+        animes = dataStore.findAllAnimes();
+    }
+
     //TODO return list of ordered most common with count
     // link : http://stackoverflow.com/questions/19031213/java-get-most-common-element-in-a-list
     public static <T> T mostCommon(List<T> list) {
@@ -54,11 +53,11 @@ public class StatisticsUtils {
         return max.getKey();
     }
 
-    public double getAverageAge(List<DbUser> dbUsers) {
+    public double getAverageAge(List<User> users) {
         int total = 0;
         int count = 0;
 
-        for(DbUser u : dbUsers){
+        for(User u : users){
             if(u.getBirthday() != null){
                 count++;
                 total += u.getBirthday().until(IsoChronology.INSTANCE.dateNow()).getYears();
@@ -69,9 +68,9 @@ public class StatisticsUtils {
 
     public void showAverageAge() {
         try {
-            List<DbUser> females = new ArrayList<DbUser>();
-            List<DbUser> males = new ArrayList<DbUser>();
-            for(DbUser u : dbUsers){
+            List<User> females = new ArrayList<>();
+            List<User> males = new ArrayList<>();
+            for(User u : users){
                 if(u.getGender() != null){
                     if (u.getGender() == Gender.FEMALE)
                         females.add(u);
@@ -79,7 +78,7 @@ public class StatisticsUtils {
                          males.add(u);
                 }
             }
-            System.out.println("There are " + dbUsers.size() + "women and their average age is: " + getAverageAge(dbUsers));
+            System.out.println("There are " + users.size() + "women and their average age is: " + getAverageAge(users));
             System.out.println("There are " + males.size() + "men and their average age is: " + getAverageAge(males));
             System.out.println("There are " + females.size() + "women and their average age is: " + getAverageAge(females));
         } catch (Exception e) {
@@ -87,9 +86,9 @@ public class StatisticsUtils {
         }
     }
 
-    public int[] getCategories(List<DbUser> dbUsers) {
+    public int[] getCategories(List<User> users) {
         int[] ageCategories = new int[20];
-        for(DbUser u : dbUsers){
+        for(User u : users){
             if(u.getBirthday() != null){
                 int age = u.getBirthday().until(IsoChronology.INSTANCE.dateNow()).getYears();
                 int mod = age % 5;
@@ -102,69 +101,67 @@ public class StatisticsUtils {
 
     public void showAgeCategories() {
         try {
-            List<DbUser> females = new ArrayList<DbUser>();
-            List<DbUser> males = new ArrayList<DbUser>();
-            System.out.println("Age categories of dbUsers: " + getCategories(dbUsers));
+            List<User> females = new ArrayList<>();
+            List<User> males = new ArrayList<>();
+            System.out.println("Age categories of users: " + getCategories(users));
             System.out.println("Age categories of men: " + getCategories(females));
             System.out.println("Average age of women: " + getCategories(males));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-    @Inject
-    DataQueries dataQueries;
+    
     public Genre getMostFavouriteGenre() {
-        List<AnimeEntry> animeEntries = dataQueries.getAnimeEntries();
+        List<AnimeEntry> animeEntries = dataStore.findAllAnimeEntries();
         animeEntries.stream().filter(a -> a.getScore() == 10);
-        List<DbAnime> mostScoredDbAnime = dbAnimes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
+        List<Anime> mostScoredAnime = animes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
         List<Genre> genres = new ArrayList<>();
-        for(DbAnime dbAnime : mostScoredDbAnime) {
-            genres.addAll(dbAnime.getGenreEntriesAsList());
+        for(Anime anime : mostScoredAnime) {
+            genres.addAll(anime.getGenres());
         }
         return mostCommon(genres);
     }
 
     public Genre getMostWatchedGenre() {
-        List<AnimeEntry> animeEntries = dataQueries.getAnimeEntries();
-        List<DbAnime> dbAnimeFromEntries = dbAnimes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
+        List<AnimeEntry> animeEntries = dataStore.findAllAnimeEntries();
+        List<Anime> animeFromEntries = animes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
         List<Genre> genres = new ArrayList<>();
-        for(DbAnime dbAnime : dbAnimeFromEntries) {
-            genres.addAll(dbAnime.getGenreEntriesAsList());
+        for(Anime anime : animeFromEntries) {
+            genres.addAll(anime.getGenres());
         }
         return mostCommon(genres);
     }
 
-    public Genre getMostFavouriteGenreOf(List<DbUser> dbUsers) {
+    public Genre getMostFavouriteGenreOf(List<User> users) {
         List<AnimeEntry> animeEntries = new ArrayList<AnimeEntry>();
-        for (DbUser u : dbUsers) {
-            animeEntries.addAll(u.getAnimeEntriesAsList());
+        for (User u : users) {
+            animeEntries.addAll(u.getAnimeEntries());
         }
         animeEntries.stream().filter(a -> a.getScore() == 10);
-        List<DbAnime> mostScoredDbAnime = dbAnimes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
+        List<Anime> mostScoredAnime = animes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
         List<Genre> genres = new ArrayList<>();
-        for(DbAnime dbAnime : mostScoredDbAnime) {
-            genres.addAll(dbAnime.getGenreEntriesAsList());
+        for(Anime anime : mostScoredAnime) {
+            genres.addAll(anime.getGenres());
         }
         return mostCommon(genres);
     }
 
-    public Genre getMostWatchedGenreOf(List<DbUser> dbUsers) {
+    public Genre getMostWatchedGenreOf(List<User> users) {
         List<AnimeEntry> animeEntries = new ArrayList<AnimeEntry>();
-        for (DbUser u : dbUsers) {
-            animeEntries.addAll(u.getAnimeEntriesAsList());
+        for (User u : users) {
+            animeEntries.addAll(u.getAnimeEntries());
         }
-        List<DbAnime> dbAnimeFromEntries = dbAnimes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
+        List<Anime> animeFromEntries = animes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
         List<Genre> genres = new ArrayList<>();
-        for(DbAnime dbAnime : dbAnimeFromEntries) {
-            genres.addAll(dbAnime.getGenreEntriesAsList());
+        for(Anime anime : animeFromEntries) {
+            genres.addAll(anime.getGenres());
         }
         return mostCommon(genres);
     }
 
-    public DbAnime mostWatchedAnime() {
-        List<AnimeEntry> animeEntries = dataQueries.getAnimeEntries();
-        List<DbAnime> dbAnimeFromEntries = dbAnimes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
-        return mostCommon(dbAnimeFromEntries);
+    public Anime mostWatchedAnime() {
+        List<AnimeEntry> animeEntries = dataStore.findAllAnimeEntries();
+        List<Anime> animeFromEntries = animes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
+        return mostCommon(animeFromEntries);
     }
 }

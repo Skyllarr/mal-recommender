@@ -1,12 +1,13 @@
-package cz.muni.fi.pv254.repository;
+package cz.muni.fi.pv254.repository.entityrepository;
 
 /**
  * Created by suomiy on 11/7/15.
  */
 
 import com.mysema.query.jpa.impl.JPAQuery;
-import cz.muni.fi.pv254.entity.DbUser;
-import cz.muni.fi.pv254.entity.QDbUser;
+import cz.muni.fi.pv254.data.entity.DbUser;
+import cz.muni.fi.pv254.data.entity.QDbUser;
+import cz.muni.fi.pv254.init.Setup;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -18,7 +19,7 @@ import java.util.List;
 @Transactional
 public class DbUserRepository extends Repository<DbUser> {
 
-    private final int startId = 1048;
+    private static final Long maxResultCount = Setup.userMaxResultCount;
 
     public DbUserRepository() {
         super();
@@ -26,7 +27,7 @@ public class DbUserRepository extends Repository<DbUser> {
 
     @Inject
     public DbUserRepository(EntityManager em) {
-        super(em, DbUser.class, QDbUser.dbUser);
+        super(em, maxResultCount, DbUser.class, QDbUser.dbUser);
     }
 
 
@@ -41,12 +42,14 @@ public class DbUserRepository extends Repository<DbUser> {
         return dbUsers.size() == 0 ? null : dbUsers.get(0);
     }
 
-    public List<DbUser> find(int maxCount) {
+    public DbUser findByMalId(Long malId) {
         QDbUser dbUser = QDbUser.dbUser;
-        final int stopValue = maxCount + startId - 1;
-        return new JPAQuery(em)
+
+        List<DbUser> dbUsers = new JPAQuery(em)
                 .from(dbUser)
-                .where(dbUser.id.between(1, stopValue))
+                .where(dbUser.malId.eq(malId))
                 .list(dbUser);
+
+        return dbUsers.size() == 0 ? null : dbUsers.get(0);
     }
 }

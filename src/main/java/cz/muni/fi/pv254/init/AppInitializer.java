@@ -1,9 +1,7 @@
 package cz.muni.fi.pv254.init;
 
-import cz.muni.fi.pv254.entity.User;
-import cz.muni.fi.pv254.repository.DbUserRepository;
-import cz.muni.fi.pv254.repository.UserRepository;
-import cz.muni.fi.pv254.utils.AnimeListParser;
+import cz.muni.fi.pv254.algorithms.Normalizer;
+import cz.muni.fi.pv254.dataUtils.DataStore;
 import cz.muni.fi.pv254.utils.StatisticsUtils;
 
 import javax.inject.Inject;
@@ -21,13 +19,19 @@ class AppInitializer implements ServletContextListener {
     StatisticsUtils stats;
 
     @Inject
-    AnimeListParser animeListParser;
+    DataStore dataStore;
 
     @Inject
-    UserRepository userRepository;
+    Normalizer normalizer;
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
+        // init
+        dataStore.fetchData();
 
+    }
+
+    private void show(Object message){
+        System.out.println(message);
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {

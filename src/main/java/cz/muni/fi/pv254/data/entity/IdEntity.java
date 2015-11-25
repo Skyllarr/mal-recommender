@@ -1,5 +1,7 @@
-package cz.muni.fi.pv254.entity;
+package cz.muni.fi.pv254.data.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -13,6 +15,8 @@ import java.io.Serializable;
  * Represents base for all reasonable entities with Long Id.
  */
 @MappedSuperclass
+@Getter
+@Setter
 public abstract class IdEntity implements Serializable {
     @GenericGenerator(
             name = "seq",
@@ -36,29 +40,6 @@ public abstract class IdEntity implements Serializable {
         this.id = entity.id;
     }
 
-    /**
-     * Get the id of entity
-     *
-     * @return id of entity
-     */
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -71,17 +52,11 @@ public abstract class IdEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        if (id != null) {
-            return id.intValue();
-        } else {
-            return 0;
-        }
+        return (id != null) ? id.intValue() : 0;
     }
 
     @Override
     public String toString() {
-        return "IdEntity{" +
-                "id=" + id +
-                '}';
+        return "IdEntity{id=" + id + '}';
     }
 }

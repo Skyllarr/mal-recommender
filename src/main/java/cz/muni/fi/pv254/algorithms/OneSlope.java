@@ -1,9 +1,8 @@
 package cz.muni.fi.pv254.algorithms;
 
-import cz.muni.fi.pv254.entity.DbAnime;
-import cz.muni.fi.pv254.entity.DbUser;
-import cz.muni.fi.pv254.repository.DbAnimeRepository;
-import cz.muni.fi.pv254.repository.DbUserRepository;
+import cz.muni.fi.pv254.data.Anime;
+import cz.muni.fi.pv254.data.User;
+import cz.muni.fi.pv254.dataUtils.DataStore;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -13,27 +12,19 @@ import java.util.List;
  */
 public class OneSlope {
     @Inject
-    DbAnimeRepository dbAnimeRepository;
-    @Inject
-    DbUserRepository dbUserRepository;
-
-    public OneSlope() {}
-    public OneSlope(DbAnimeRepository dbAnimeRepository, DbUserRepository dbUserRepository) {
-        this.dbAnimeRepository = dbAnimeRepository;
-        this.dbUserRepository = dbUserRepository;
-    }
+    DataStore dataStore;
 
     public void computeOneSlopeValues() {
-        List<DbAnime> dbAnimes = dbAnimeRepository.findAll();
-        List<DbUser> dbUsers = dbUserRepository.findAll();
+        List<Anime> animes = dataStore.findAllAnimes();
+        List<User> users = dataStore.findAllUsers();
 
-        for(DbAnime dbAnime : dbAnimes){
+        for(Anime anime : animes){
             int numberOfRatings = 0;
-            int numberOfRatedPairs = 0; //will be denominator for equation of one slope for this dbAnime
-            for(DbUser dbUser : dbUsers) {
-                if (dbUser.getAnimeEntriesAsList().contains(dbAnime)) {
+            int numberOfRatedPairs = 0; //will be denominator for equation of one slope for this anime
+            for(User dbUser : users) {
+                if (dbUser.getAnimeEntries().contains(anime)) {
                     numberOfRatings++;
-                    numberOfRatedPairs += dbUser.getAnimeEntriesAsList().size() - 1;
+                    numberOfRatedPairs += dbUser.getAnimeEntries().size() - 1;
                 }
             }
         }

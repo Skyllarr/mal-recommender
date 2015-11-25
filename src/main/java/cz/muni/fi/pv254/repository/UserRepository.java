@@ -4,8 +4,9 @@ package cz.muni.fi.pv254.repository;
  * Created by suomiy on 11/7/15.
  */
 
-import cz.muni.fi.pv254.entity.DbUser;
-import cz.muni.fi.pv254.entity.User;
+import cz.muni.fi.pv254.data.User;
+import cz.muni.fi.pv254.data.entity.DbUser;
+import cz.muni.fi.pv254.repository.entityrepository.DbUserRepository;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -22,6 +23,7 @@ public class UserRepository {
     }
 
     public User create(final User entity) throws Exception {
+        updateAnimeEntries(entity);
         return convertToUser(dbUserRepository.create(entity.getDbUser()));
     }
 
@@ -30,7 +32,7 @@ public class UserRepository {
     }
 
     public User update(final User entity) {
-        entity.getDbUser().setAnimeEntriesAsString(entity.getAnimeEntries());
+        updateAnimeEntries(entity);
         DbUser dbUser = dbUserRepository.update(entity.getDbUser());
         entity.setDbUser(dbUser);
         return dbUser == null ? null : entity;
@@ -45,14 +47,21 @@ public class UserRepository {
     }
 
     public List<User> batchCreate(List<User> entities) throws Exception {
+        updateAnimeEntries(entities);
         return convert(dbUserRepository.batchCreate(reverseConvert(entities)));
     }
+
+    public List<User> batchUpdate(List<User> entities) {
+        updateAnimeEntries(entities);
+        return convert(dbUserRepository.batchUpdate(reverseConvert(entities)));
+    }
+
     public User findByName(String name) {
         return convertToUser(dbUserRepository.findByName(name));
     }
 
-    public List<User> find(int maxCount) {
-        return convert(dbUserRepository.find(maxCount));
+    public User findByMalId(Long malId) {
+        return convertToUser(dbUserRepository.findByMalId(malId));
     }
 
     private User convertToUser(DbUser dbUser) {
@@ -65,5 +74,14 @@ public class UserRepository {
 
     private List<User> convert(List<DbUser> list) {
         return list.stream().map(User::new).collect(Collectors.toList());
+    }
+
+
+    private void updateAnimeEntries(List<User> entities) {
+        entities.forEach(this::updateAnimeEntries);
+    }
+
+    private void updateAnimeEntries(User entity) {
+        entity.getDbUser().setAnimeEntriesAsString(entity.getAnimeEntries());
     }
 }

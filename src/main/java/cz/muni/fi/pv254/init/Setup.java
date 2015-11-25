@@ -44,6 +44,9 @@ public class Setup {
     @LiquibaseType
     private DataSource dataSource;
 
+    // null == All Entries
+    public static final Long userMaxResultCount = null;
+    public static final Long animeMaxResultCount = null;
 
     @Produces
     @LiquibaseType

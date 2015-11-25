@@ -6,14 +6,12 @@ package cz.muni.fi.pv254.utils; /**
  * Created by skylar on 20.11.15.
  */
 
-import cz.muni.fi.pv254.dataUtils.AnimeCacher;
-import cz.muni.fi.pv254.entity.AnimeEntry;
-import cz.muni.fi.pv254.entity.DbAnime;
-import cz.muni.fi.pv254.entity.DbUser;
-import cz.muni.fi.pv254.enums.AnimeEntryStatus;
-import cz.muni.fi.pv254.enums.AnimeType;
-import cz.muni.fi.pv254.repository.DbAnimeRepository;
-import cz.muni.fi.pv254.repository.DbUserRepository;
+import cz.muni.fi.pv254.data.Anime;
+import cz.muni.fi.pv254.data.AnimeEntry;
+import cz.muni.fi.pv254.data.User;
+import cz.muni.fi.pv254.data.enums.AnimeEntryStatus;
+import cz.muni.fi.pv254.data.enums.AnimeType;
+import cz.muni.fi.pv254.dataUtils.DataStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -24,7 +22,8 @@ import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -34,22 +33,12 @@ import java.util.List;
 public class AnimeListParser {
 
     @Inject
-    DbUserRepository dbUserRepository;
+    DataStore dataStore;
 
-    @Inject
-    DbAnimeRepository dbAnimeRepository;
-
-    private AnimeCacher animeCacher;
-
-    private static final String listsFolder = "/home/ansy/Downloads/mal_data/allLists"; //
-    private static final String logFile = "/home/ansy/Downloads/mal_data/processed";
-
-    private PrintWriter logger;
+    private static final String listsFolder = "/home/ansy/Downloads/mal_data/allLists";
 
     public void run() {
         try{
-            animeCacher = new AnimeCacher(dbAnimeRepository);
-            logger = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
             File[] files = new File(listsFolder).listFiles();
 
             if (files == null) {
@@ -65,8 +54,9 @@ public class AnimeListParser {
 
                 logln(" - Done!");
             }
+
+            dataStore.flush();
         }catch (Exception e){
-            logger.close();
             e.printStackTrace();
         }
     }
@@ -83,74 +73,70 @@ public class AnimeListParser {
         Element root = dom.getDocumentElement();
 
         NodeList myInfos = root.getElementsByTagName("myinfo");
-        DbUser dbUser = dbUserRepository.findByName(name);
+        User user = dataStore.findUserByName(name);
 
-        if(dbUser == null){
-            log("DbUser" + name + " not found!");
+        if(user == null){
+            log("- not found!");
             return;
         }
 
         if(myInfos == null || myInfos.getLength() == 0){
-            log("DbUser " + name + " deleted.");
-            try { dbUserRepository.delete(dbUser.getId()); } catch (Exception e) { e.printStackTrace(); }
+            log( "- deleted.");
+            try { dataStore.deleteDbUser(user.getId()); } catch (Exception e) { e.printStackTrace(); }
             return;
         }
 
         for(int i = 0 ; i < myInfos.getLength(); i++) {
-            updateUser(dbUser, (Element)myInfos.item(i));
+            updateUser(user, (Element)myInfos.item(i));
         }
 
 
-        NodeList animes = root.getElementsByTagName("dbAnime");
+        NodeList animes = root.getElementsByTagName("anime");
 
         if(animes == null || animes.getLength() == 0){
             return;
         }
 
-        List<AnimeEntry> usersAnimeEntries = dbUser.getAnimeEntriesAsList();
+        List<AnimeEntry> usersAnimeEntries = user.getAnimeEntries();
 
         for(int i = 0 ; i < animes.getLength(); i++) {
             processAnime(usersAnimeEntries, (Element)animes.item(i));
         }
-        dbUser.setAnimeEntriesAsString(usersAnimeEntries);
-
-        dbUserRepository.update(dbUser);
-        animeCacher.flush();
     }
 
 
-    private void updateUser(DbUser dbUser, Element userElement) throws IllegalAccessException {
+    private void updateUser(User user, Element userElement) throws IllegalAccessException {
 
         String name = getTextValue(userElement, "user_name");
 
-        if(!name.equals(dbUser.getName())){
-            log("Invalid username for dbUser" + dbUser.getName() + " is " + name + "!");
-            throw new IllegalArgumentException(dbUser.getName() + " vs " + name);
+        if(!name.equals(user.getName())){
+            log("Invalid username for user" + user.getName() + " is " + name + "!");
+            throw new IllegalArgumentException(user.getName() + " vs " + name);
         }
 
         int id = getIntValue(userElement, "user_id");
 
-        dbUser.setMalId((long) id);
+        user.setMalId((long) id);
     }
 
     private void processAnime(List<AnimeEntry> usersAnimeEntries, Element animeElem) throws Exception {
         Long malId = (long) getIntValue(animeElem, "series_animedb_id");
-        DbAnime dbAnime = animeCacher.findByMalId(malId);
+        Anime anime = dataStore.findAnimeByMalId(malId);
 
-        if(dbAnime == null) {
+        if(anime == null) {
             String title = getTextValue(animeElem, "series_title");
             String imageLink = getTextValue(animeElem, "series_image");
 
             Long episodes = (long) getIntValue(animeElem, "series_episodes");
             AnimeType type = AnimeType.get(getIntValue(animeElem, "series_type"));
 
-            dbAnime = new DbAnime(title, imageLink, malId, episodes, type);
-            animeCacher.create(dbAnime);
+            anime = new Anime(title, imageLink, malId, episodes, type);
+            dataStore.createAnime(anime);
         }
 
         AnimeEntryStatus status =  AnimeEntryStatus.get(getIntValue(animeElem, "my_status"));
         Long score = (long) getIntValue(animeElem, "my_score");
-        usersAnimeEntries.add(new AnimeEntry(dbAnime.getMalId(), score, status));
+        usersAnimeEntries.add(new AnimeEntry(anime.getMalId(), score, status));
 
     }
 
@@ -169,17 +155,15 @@ public class AnimeListParser {
         return Integer.parseInt(getTextValue(element,tagName));
     }
 
-    public String getCurrentTimeStamp() {
+    private String getCurrentTimeStamp() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 
     private void log(String message){
-        logger.print(message);
-        logger.flush();
+        System.out.print(message);
     }
 
     private void logln(String message){
-        logger.println(message);
-        logger.flush();
+        System.out.println(message);
     }
 }

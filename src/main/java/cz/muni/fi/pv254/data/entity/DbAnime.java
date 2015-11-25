@@ -1,8 +1,9 @@
-package cz.muni.fi.pv254.entity;
+package cz.muni.fi.pv254.data.entity;
 
+import cz.muni.fi.pv254.data.enums.AnimeType;
+import cz.muni.fi.pv254.data.enums.Genre;
 import cz.muni.fi.pv254.dataUtils.JsonParser;
-import cz.muni.fi.pv254.enums.AnimeType;
-import cz.muni.fi.pv254.enums.Genre;
+import cz.muni.fi.pv254.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,11 +39,23 @@ public class DbAnime extends IdEntity{
 
     public DbAnime(String title, String imageLink, Long malId, Long episodes, AnimeType type) {
         super();
-        this.title = title;
-        this.imageLink = imageLink;
+        setTitle(title);
+        setImageLink(imageLink);
         this.malId = malId;
         this.episodes = episodes;
         this.type = type;
+    }
+
+    public void setGenreEntries(String genreEntries) {
+        this.genreEntries = Utils.removeEmptyStr(genreEntries);
+    }
+
+    public void setImageLink(String imageLink) {
+        this.imageLink = Utils.removeEmptyStr(imageLink);
+    }
+
+    public void setTitle(String title) {
+        this.title = Utils.removeEmptyStr(title);
     }
 
     public List<Genre> getGenreEntriesAsList() {
@@ -50,11 +63,12 @@ public class DbAnime extends IdEntity{
     }
 
     public void setGenreEntriesAsString(List<Genre> genre) {
-        this.genreEntries = JsonParser.save(genre);
+        setGenreEntries(JsonParser.save(genre));
     }
 
+    @Override
     public String toString() {
-        return String.format("DbAnime - title: %s, imageLink %s, malId: %d, episodes: %d, type %s",
-                title, imageLink, malId, episodes, type == null ? "null" : type.name());
+        return String.format("Anime - title: %s, imageLink %s, malId: %d, episodes: %d, type %s, popularity %d, ranked %d",
+                title, imageLink, malId, episodes, type == null ? "null" : type.name(), popularity, ranked);
     }
 }

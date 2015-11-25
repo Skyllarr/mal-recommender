@@ -1,4 +1,4 @@
-package cz.muni.fi.pv254.enums;
+package cz.muni.fi.pv254.data.enums;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,9 @@
-package cz.muni.fi.pv254.entity;
+package cz.muni.fi.pv254.data.entity;
 
+import cz.muni.fi.pv254.data.AnimeEntry;
+import cz.muni.fi.pv254.data.enums.Gender;
 import cz.muni.fi.pv254.dataUtils.JsonParser;
-import cz.muni.fi.pv254.enums.Gender;
+import cz.muni.fi.pv254.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,9 +36,17 @@ public class DbUser extends  IdEntity{
 
     public DbUser(String name, Long malId, LocalDate birthday) {
         super();
-        this.name = name;
+        setName(name);
         this.malId = malId;
         this.birthday = birthday;
+    }
+
+    public void setAnimeEntries(String animeEntries) {
+        this.animeEntries = Utils.removeEmptyStr(animeEntries);
+    }
+
+    public void setName(String name) {
+        this.name = Utils.removeEmptyStr(name);
     }
 
     public List<AnimeEntry> getAnimeEntriesAsList() {
@@ -44,11 +54,13 @@ public class DbUser extends  IdEntity{
     }
 
     public void setAnimeEntriesAsString(List<AnimeEntry> animeEntries) {
-        this.animeEntries = JsonParser.save(animeEntries);
+        setAnimeEntries(JsonParser.save(animeEntries));
     }
 
+    @Override
     public String toString() {
-        return String.format("DbUser - id:  %d, name: %s, malId: %d, birthday: %s",getId(), name , malId, birthday);
+        return String.format("User - id:  %d, name: %s, malId: %d, gender: %s, birthday: %s",
+                getId(), name , malId, gender == null ? "null" : gender.name(), birthday);
     }
 
 }

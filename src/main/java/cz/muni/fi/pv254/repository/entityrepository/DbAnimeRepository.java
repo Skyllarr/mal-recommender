@@ -1,12 +1,13 @@
-package cz.muni.fi.pv254.repository;
+package cz.muni.fi.pv254.repository.entityrepository;
 
 /**
  * Created by suomiy on 11/7/15.
  */
 
 import com.mysema.query.jpa.impl.JPAQuery;
-import cz.muni.fi.pv254.entity.DbAnime;
-import cz.muni.fi.pv254.entity.QDbAnime;
+import cz.muni.fi.pv254.data.entity.DbAnime;
+import cz.muni.fi.pv254.data.entity.QDbAnime;
+import cz.muni.fi.pv254.init.Setup;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -17,13 +18,16 @@ import java.util.List;
 @ApplicationScoped
 @Transactional
 public class DbAnimeRepository extends Repository<DbAnime> {
+
+    private static final Long maxResultCount = Setup.animeMaxResultCount;
+
     public DbAnimeRepository() {
         super();
     }
 
     @Inject
     public DbAnimeRepository(EntityManager em) {
-        super(em, DbAnime.class, QDbAnime.dbAnime);
+        super(em, maxResultCount, DbAnime.class, QDbAnime.dbAnime);
     }
 
     public DbAnime findByMalId(Long malId) {

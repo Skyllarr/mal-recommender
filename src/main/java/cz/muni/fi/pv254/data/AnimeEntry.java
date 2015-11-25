@@ -1,7 +1,7 @@
-package cz.muni.fi.pv254.entity;
+package cz.muni.fi.pv254.data;
 
 import com.google.gson.annotations.SerializedName;
-import cz.muni.fi.pv254.enums.AnimeEntryStatus;
+import cz.muni.fi.pv254.data.enums.AnimeEntryStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +14,6 @@ public class AnimeEntry{
 
     @SerializedName("m")
     private Long malAnimeId;
-
     @SerializedName("s")
     private Long score;
     @SerializedName("n")
@@ -23,7 +22,6 @@ public class AnimeEntry{
     private AnimeEntryStatus status;
 
     public AnimeEntry() {
-        super();
     }
 
     public AnimeEntry(Long malAnimeId, Long score, AnimeEntryStatus status) {
@@ -33,6 +31,7 @@ public class AnimeEntry{
         this.status = status;
     }
 
+    @Override
     public String toString() {
         return String.format("AnimeEntry - dbAnime's mal id: %s, score: %d, status %s",
                 malAnimeId,
