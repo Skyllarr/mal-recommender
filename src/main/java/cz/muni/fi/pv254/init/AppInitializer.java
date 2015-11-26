@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebListener;
 
 import static cz.muni.fi.pv254.utils.Utils.show;
 import static cz.muni.fi.pv254.utils.Utils.showSorted;
+import static cz.muni.fi.pv254.utils.Utils.showSortedByKeys;
 
 /**
  * Initializes application without web.xml file.
@@ -32,14 +33,25 @@ class AppInitializer implements ServletContextListener {
         // init
         dataStore.fetchData();
 
-        // not working right
-        show(stats.getDistributionOfNormalizedScore(10));
+    }
 
-       /* showSorted(stats.getDistributionOfScore());
+    private void showStats() {
+        show("score");
+        showSorted(stats.getDistributionOfScore());
+        show("most watched anime");
+        showSorted(stats.getMostWatchedAnime());
+        show("gender");
         showSorted(stats.getDistributionOfGender());
+        show("age by gender");
+        show(stats.getAverageAgeByGender());
+        show("genre by anime");
         showSorted(stats.getDistributionOfGenreByAnime());
-        showSorted(stats.getDistributionOfGenreByAllUsers());*/
-
+        show("genre by all users");
+        showSorted(stats.getDistributionOfGenreByAllUsers());
+        show("normalized");
+        showSortedByKeys(stats.getDistributionOfNormalizedScore(100));
+        show("score");
+        showSorted(stats.getDistributionOfScore());
     }
 
 

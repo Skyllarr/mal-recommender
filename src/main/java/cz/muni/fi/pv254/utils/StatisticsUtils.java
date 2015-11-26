@@ -3,6 +3,7 @@ package cz.muni.fi.pv254.utils;
 import cz.muni.fi.pv254.data.Anime;
 import cz.muni.fi.pv254.data.AnimeEntry;
 import cz.muni.fi.pv254.data.User;
+import cz.muni.fi.pv254.data.enums.Gender;
 import cz.muni.fi.pv254.data.enums.Genre;
 import cz.muni.fi.pv254.dataUtils.DataStore;
 
@@ -21,11 +22,6 @@ public class StatisticsUtils {
     @Inject
     DataStore dataStore;
 
-    public Map<Object, Integer> getDistributionOfGender() {
-        return getDistribution(dataStore.findAllUsers().stream()
-                .map(User::getGender)
-                .collect(Collectors.toList()));
-    }
 
     public Map<Object, Integer> getDistributionOfGenreByAnime() {
         List<Genre> genres = new ArrayList<>();
@@ -40,9 +36,13 @@ public class StatisticsUtils {
         Map<Long, Anime> map = dataStore.findAllAnimes().stream().collect(Collectors.toMap(Anime::getMalId, a -> a ));
 
         animeEntries.stream().forEach(a -> {
-            mergetoDistribution(result, map.get(a.getMalAnimeId()).getGenres());
+            mergeToDistribution(result, map.get(a.getMalAnimeId()).getGenres());
         });
         return result;
+    }
+
+    public Map<Object, Integer> getDistributionOfEntriesByAllUsers() {
+        return dataStore.findAllUsers().stream().collect(Collectors.toMap(User::getMalId, a -> a.getAnimeEntries().size() ));
     }
 
     public Map<Object, Integer> getDistributionOfScore() {
@@ -51,45 +51,39 @@ public class StatisticsUtils {
                 .collect(Collectors.toList()));
     }
 
-    //TODO fix
+    // normalize score can be unbounded
     public Map<Object, Integer> getDistributionOfNormalizedScore(int outputSize) {
         return getDistribution(dataStore.findAllAnimeEntries().stream()
                 .map(AnimeEntry::getNormalizedScore)
                 .collect(Collectors.toList()), outputSize);
     }
 
-    public double getAverageAge(List<User> users) {
-        int total = 0;
-        int count = 0;
-
-        for(User u : users){
-            if(u.getBirthday() != null){
-                count++;
-                total += u.getBirthday().until(IsoChronology.INSTANCE.dateNow()).getYears();
-            }
-        }
-        return (count > 0 ? ((double) total)/count : 0);
+    public Map<Object, Integer> getDistributionOfGender() {
+        return getDistribution(dataStore.findAllUsers().stream()
+                .map(User::getGender)
+                .collect(Collectors.toList()));
     }
 
-    /*public void showAverageAge() {
-        try {
-            List<User> females = new ArrayList<>();
-            List<User> males = new ArrayList<>();
-            for(User u : users){
-                if(u.getGender() != null){
-                    if (u.getGender() == Gender.FEMALE)
-                        females.add(u);
-                    else if (u.getGender() == Gender.MALE)
-                        males.add(u);
-                }
-            }
-            System.out.println("There are " + users.size() + "women and their average age is: " + getAverageAge(users));
-            System.out.println("There are " + males.size() + "men and their average age is: " + getAverageAge(males));
-            System.out.println("There are " + females.size() + "women and their average age is: " + getAverageAge(females));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public Map<Gender, Double> getAverageAgeByGender() {
+        Map<Gender, Double> map = new HashMap<>();
+        map.put(Gender.FEMALE, getAverageAge(dataStore.findUsers(u -> u.getGender() == Gender.FEMALE)));
+        map.put(Gender.MALE, getAverageAge(dataStore.findUsers(u -> u.getGender() == Gender.MALE)));
+        map.put(null, getAverageAge(dataStore.findUsers(u -> u.getGender() ==null)));
+
+        return map;
     }
+
+    public Map<Anime, Integer> getMostWatchedAnime() {
+        Map<Anime, Integer> result = new HashMap<>();
+        getDistribution(dataStore.findAllAnimeEntries()
+                .stream()
+                .map(AnimeEntry::getMalAnimeId)
+                .collect(Collectors.toList()))
+                .forEach((k,v) -> result.put(dataStore.findAnimeByMalId((Long)k), v));
+        return result;
+    }
+
+    /*
 
     public int[] getCategories(List<User> users) {
         int[] ageCategories = new int[20];
@@ -115,17 +109,9 @@ public class StatisticsUtils {
             e.printStackTrace();
         }
     }
-    public List<Genre> getMostWatchedGenre() {
-        List<AnimeEntry> animeEntries = dataStore.findAllAnimeEntries();
-        List<Anime> animeFromEntries = animes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
-        List<Genre> genres = new ArrayList<>();
-        for(Anime anime : animeFromEntries) {
-            genres.addAll(anime.getGenres());
-        }
-        return getDistribution(genres);
-    }
+    */
 
-    public Genre getMostFavouriteGenreOf(List<User> users) {
+   /* public Genre getMostFavouriteGenreOfUsers(List<User> users) {
         List<AnimeEntry> animeEntries = new ArrayList<AnimeEntry>();
         for (User u : users) {
             animeEntries.addAll(u.getAnimeEntries());
@@ -137,44 +123,22 @@ public class StatisticsUtils {
             genres.addAll(anime.getGenres());
         }
         return getDistribution(genres);
-    }
-
-    public Genre getMostWatchedGenreOf(List<User> users) {
-        List<AnimeEntry> animeEntries = new ArrayList<AnimeEntry>();
-        for (User u : users) {
-            animeEntries.addAll(u.getAnimeEntries());
-        }
-        List<Anime> animeFromEntries = animes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
-        List<Genre> genres = new ArrayList<>();
-        for(Anime anime : animeFromEntries) {
-            genres.addAll(anime.getGenres());
-        }
-        return getDistribution(genres);
-    }
-
-    public Anime mostWatchedAnime() {
-        List<AnimeEntry> animeEntries = dataStore.findAllAnimeEntries();
-        List<Anime> animeFromEntries = animes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
-        return getDistribution(animeFromEntries);
     }*/
 
 
-    private static Map<Object, Integer> getDistribution(List<?> list) {
-        return mergetoDistribution(new HashMap<>(),list);
-    }
+    private double getAverageAge(List<User> users) {
+        int total = 0;
+        int count = 0;
 
-    private static Map<Object, Integer> mergetoDistribution( Map<Object, Integer> map, List<?> list) {
-        list.stream().forEach( e -> {
-            if(!map.containsKey(e)){
-                map.put(e, 0);
+        for(User u : users){
+            if(u.getBirthday() != null){
+                count++;
+                total += u.getBirthday().until(IsoChronology.INSTANCE.dateNow()).getYears();
             }
-            map.merge(e, 1, (v,n) -> v + n);
-        });
-
-        return  map;
+        }
+        return (count > 0 ? ((double) total)/count : 0);
     }
 
-    //TODO not working correctly
     private static Map<Object, Integer> getDistribution(List<Number> list, int outputSize) {
         if(list == null || list.size() == 0){
             throw new IllegalArgumentException("list");
@@ -185,6 +149,21 @@ public class StatisticsUtils {
         Double precision = (max - min) / outputSize;
 
         return getDistribution(doubleList.parallelStream().map(a -> a - (a % precision)).collect(Collectors.toList()));
+    }
+
+    private static Map<Object, Integer> getDistribution(List<?> list) {
+        return mergeToDistribution(new HashMap<>(),list);
+    }
+
+    private static Map<Object, Integer> mergeToDistribution(Map<Object, Integer> map, List<?> list) {
+        list.stream().forEach( e -> {
+            if(!map.containsKey(e)){
+                map.put(e, 0);
+            }
+            map.merge(e, 1, (v,n) -> v + n);
+        });
+
+        return  map;
     }
 
 }
