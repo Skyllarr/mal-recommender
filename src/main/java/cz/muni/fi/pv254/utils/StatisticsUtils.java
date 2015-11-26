@@ -3,17 +3,13 @@ package cz.muni.fi.pv254.utils;
 import cz.muni.fi.pv254.data.Anime;
 import cz.muni.fi.pv254.data.AnimeEntry;
 import cz.muni.fi.pv254.data.User;
-import cz.muni.fi.pv254.data.enums.Gender;
 import cz.muni.fi.pv254.data.enums.Genre;
 import cz.muni.fi.pv254.dataUtils.DataStore;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.time.chrono.IsoChronology;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,32 +21,41 @@ public class StatisticsUtils {
     @Inject
     DataStore dataStore;
 
-    List<User> users;
-    List<Anime> animes;
-
-    public StatisticsUtils() {
+    public Map<Object, Integer> getDistributionOfGender() {
+        return getDistribution(dataStore.findAllUsers().stream()
+                .map(User::getGender)
+                .collect(Collectors.toList()));
     }
 
-    public void init() {
-        users = dataStore.findAllUsers();
-        animes = dataStore.findAllAnimes();
+    public Map<Object, Integer> getDistributionOfGenreByAnime() {
+        List<Genre> genres = new ArrayList<>();
+        dataStore.findAllAnimes().forEach(a -> a.getGenres().forEach(genres::add));
+        return getDistribution(genres);
     }
 
-    //TODO return list of ordered most common with count
-    // link : http://stackoverflow.com/questions/19031213/java-get-most-common-element-in-a-list
-    public static <T> T mostCommon(List<T> list) {
-        Map<T, Integer> map = new HashMap<>();
-        for (T t : list) {
-            Integer val = map.get(t);
-            map.put(t, val == null ? 1 : val + 1);
-        }
+    public Map<Object, Integer> getDistributionOfGenreByAllUsers() {
+        Map<Object, Integer> result = getDistribution(new ArrayList<>());
 
-        Map.Entry<T, Integer> max = null;
-        for (Map.Entry<T, Integer> e : map.entrySet()) {
-            if (max == null || e.getValue() > max.getValue())
-                max = e;
-        }
-        return max.getKey();
+        List<AnimeEntry> animeEntries =  dataStore.findAllAnimeEntries();
+        Map<Long, Anime> map = dataStore.findAllAnimes().stream().collect(Collectors.toMap(Anime::getMalId, a -> a ));
+
+        animeEntries.stream().forEach(a -> {
+            mergetoDistribution(result, map.get(a.getMalAnimeId()).getGenres());
+        });
+        return result;
+    }
+
+    public Map<Object, Integer> getDistributionOfScore() {
+        return getDistribution(dataStore.findAllAnimeEntries().stream()
+                .map(AnimeEntry::getScore)
+                .collect(Collectors.toList()));
+    }
+
+    //TODO fix
+    public Map<Object, Integer> getDistributionOfNormalizedScore(int outputSize) {
+        return getDistribution(dataStore.findAllAnimeEntries().stream()
+                .map(AnimeEntry::getNormalizedScore)
+                .collect(Collectors.toList()), outputSize);
     }
 
     public double getAverageAge(List<User> users) {
@@ -66,7 +71,7 @@ public class StatisticsUtils {
         return (count > 0 ? ((double) total)/count : 0);
     }
 
-    public void showAverageAge() {
+    /*public void showAverageAge() {
         try {
             List<User> females = new ArrayList<>();
             List<User> males = new ArrayList<>();
@@ -75,7 +80,7 @@ public class StatisticsUtils {
                     if (u.getGender() == Gender.FEMALE)
                         females.add(u);
                     else if (u.getGender() == Gender.MALE)
-                         males.add(u);
+                        males.add(u);
                 }
             }
             System.out.println("There are " + users.size() + "women and their average age is: " + getAverageAge(users));
@@ -110,26 +115,14 @@ public class StatisticsUtils {
             e.printStackTrace();
         }
     }
-    
-    public Genre getMostFavouriteGenre() {
-        List<AnimeEntry> animeEntries = dataStore.findAllAnimeEntries();
-        animeEntries.stream().filter(a -> a.getScore() == 10);
-        List<Anime> mostScoredAnime = animes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
-        List<Genre> genres = new ArrayList<>();
-        for(Anime anime : mostScoredAnime) {
-            genres.addAll(anime.getGenres());
-        }
-        return mostCommon(genres);
-    }
-
-    public Genre getMostWatchedGenre() {
+    public List<Genre> getMostWatchedGenre() {
         List<AnimeEntry> animeEntries = dataStore.findAllAnimeEntries();
         List<Anime> animeFromEntries = animes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
         List<Genre> genres = new ArrayList<>();
         for(Anime anime : animeFromEntries) {
             genres.addAll(anime.getGenres());
         }
-        return mostCommon(genres);
+        return getDistribution(genres);
     }
 
     public Genre getMostFavouriteGenreOf(List<User> users) {
@@ -143,7 +136,7 @@ public class StatisticsUtils {
         for(Anime anime : mostScoredAnime) {
             genres.addAll(anime.getGenres());
         }
-        return mostCommon(genres);
+        return getDistribution(genres);
     }
 
     public Genre getMostWatchedGenreOf(List<User> users) {
@@ -156,12 +149,42 @@ public class StatisticsUtils {
         for(Anime anime : animeFromEntries) {
             genres.addAll(anime.getGenres());
         }
-        return mostCommon(genres);
+        return getDistribution(genres);
     }
 
     public Anime mostWatchedAnime() {
         List<AnimeEntry> animeEntries = dataStore.findAllAnimeEntries();
         List<Anime> animeFromEntries = animes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
-        return mostCommon(animeFromEntries);
+        return getDistribution(animeFromEntries);
+    }*/
+
+
+    private static Map<Object, Integer> getDistribution(List<?> list) {
+        return mergetoDistribution(new HashMap<>(),list);
     }
+
+    private static Map<Object, Integer> mergetoDistribution( Map<Object, Integer> map, List<?> list) {
+        list.stream().forEach( e -> {
+            if(!map.containsKey(e)){
+                map.put(e, 0);
+            }
+            map.merge(e, 1, (v,n) -> v + n);
+        });
+
+        return  map;
+    }
+
+    //TODO not working correctly
+    private static Map<Object, Integer> getDistribution(List<Number> list, int outputSize) {
+        if(list == null || list.size() == 0){
+            throw new IllegalArgumentException("list");
+        }
+        List<Double> doubleList = list.parallelStream().map( n -> n == null ? 0 : n.doubleValue()).collect(Collectors.toList());
+        Double max = doubleList.parallelStream().max(Double::compare).get();
+        Double min = doubleList.parallelStream().min(Double::compare).get();
+        Double precision = (max - min) / outputSize;
+
+        return getDistribution(doubleList.parallelStream().map(a -> a - (a % precision)).collect(Collectors.toList()));
+    }
+
 }

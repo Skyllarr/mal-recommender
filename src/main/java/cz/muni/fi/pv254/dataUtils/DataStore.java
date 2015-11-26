@@ -28,6 +28,7 @@ public class DataStore {
 
     private List<User> users;
     private List<Anime> animes;
+    private List<AnimeEntry>  animeEntries;
 
     public List<Anime> findAllAnimes() {
         return animes;
@@ -35,6 +36,22 @@ public class DataStore {
 
     public List<User> findAllUsers() {
         return users;
+    }
+
+    public List<AnimeEntry> findAllAnimeEntries() {
+        return animeEntries;
+    }
+
+    public void fetchData(){
+        users = userRepository.findAll();
+        animes = animeRepository.findAll();
+        animeEntries = new ArrayList<>();
+        users.forEach(u -> animeEntries.addAll(u.getAnimeEntries()));
+    }
+
+    public void flush(){
+        userRepository.batchUpdate(users);
+        animeRepository.batchUpdate(animes);
     }
 
     public User findUserByName(String name){
@@ -67,12 +84,6 @@ public class DataStore {
     }
 
 
-    public List<AnimeEntry> findAllAnimeEntries() {
-        List<AnimeEntry>  entries = new ArrayList<>();
-        users.forEach(u -> entries.addAll(u.getAnimeEntries()));
-        return entries;
-    }
-
     public List<AnimeEntry> findAllAnimeEntriesWithScore() {
         return filterUnscoredEntries(findAllAnimeEntries());
     }
@@ -103,14 +114,12 @@ public class DataStore {
         return animes.stream().filter(predicate).collect(Collectors.toList());
     }
 
-    public void fetchData(){
-        users = userRepository.findAll();
-        animes = animeRepository.findAll();
+    public AnimeEntry findAnimeEntries(Predicate<AnimeEntry> predicate){
+        return animeEntries.stream().filter(predicate).findFirst().orElse(null);
     }
 
-    public void flush(){
-        userRepository.batchUpdate(users);
-        animeRepository.batchUpdate(animes);
+    public List<AnimeEntry> findAnimeEntry(Predicate<AnimeEntry> predicate){
+        return animeEntries.stream().filter(predicate).collect(Collectors.toList());
     }
 
     private List<AnimeEntry> filterUnscoredEntries(List<AnimeEntry> entries){
