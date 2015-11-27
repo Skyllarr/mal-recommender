@@ -1,14 +1,13 @@
 package cz.muni.fi.pv254.utils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by suomiy on 11/24/15.
  */
 public class Utils {
 
-    private static final int strLen = 9;
+    private static final int strLen = 30;
 
     public static String removeEmptyStr(String string) {
         return string != null && string.isEmpty() ? null : string;
@@ -22,6 +21,14 @@ public class Utils {
         map.forEach((k, v)->{
             String s  = k == null ? null : k.toString().substring(0, Math.min(k.toString().length(), strLen));
             System.out.println(String.format(": %" + strLen +"s", s) + ": " + v);
+        });
+        System.out.println();
+    }
+
+    public static  <K extends Comparable<? super K>, V> void showByListSize(Map<K, List<V>> map) {
+        map = sortByKey(map);
+        map.forEach((k, v)->{
+            System.out.println(":" + k + ": " + v.size());
         });
         System.out.println();
     }
@@ -52,7 +59,24 @@ public class Utils {
 
     private static <K extends Comparable<? super K>, V> Map<K, V> sortByKey( Map<K, V> map ) {
         List<Map.Entry<K, V>> list = new LinkedList<>( map.entrySet() );
-        Collections.sort( list, (o1, o2) -> (o2.getKey()).compareTo( o1.getKey() ));
+        Collections.sort( list, (o1, o2) -> {
+            K k1 = o1.getKey();
+            K k2 = o2.getKey();
+
+            if(k1 == null && k2 == null){
+                return 0;
+            }
+
+            if(k2 == null){
+                return -1;
+            }
+
+            if(k1 == null){
+                return 1;
+            }
+
+            return k2.compareTo(k1);
+        });
         return getKvMap(list);
     }
 

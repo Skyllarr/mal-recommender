@@ -83,35 +83,6 @@ public class StatisticsUtils {
         return result;
     }
 
-    /*
-
-    public int[] getCategories(List<User> users) {
-        int[] ageCategories = new int[20];
-        for(User u : users){
-            if(u.getBirthday() != null){
-                int age = u.getBirthday().until(IsoChronology.INSTANCE.dateNow()).getYears();
-                int mod = age % 5;
-                int category = ((mod == 0) ?  age : age + (5 - mod))  / 5  - 1;
-                ageCategories[category]++;
-            }
-        }
-        return ageCategories;
-    }
-
-    public void showAgeCategories() {
-        try {
-            List<User> females = new ArrayList<>();
-            List<User> males = new ArrayList<>();
-            System.out.println("Age categories of users: " + getCategories(users));
-            System.out.println("Age categories of men: " + getCategories(females));
-            System.out.println("Average age of women: " + getCategories(males));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    */
-
-
     public Map<Object,  List<Genre>> getMostFavouriteGenreOffUsers(List<User> users) {
         return users.stream().collect(Collectors.toMap(u -> u, a -> getFavoriteGenres(a.getAnimeEntries())));
     }
@@ -122,6 +93,45 @@ public class StatisticsUtils {
         return Utils.sortByValue(result).keySet().stream().map(e -> (Genre)e).collect(Collectors.toList());
     }
 
+    public Map<Integer, List<User>> getAgeCategories(List<User> users, int yearStep) {
+        if(yearStep < 1){
+            throw new IllegalArgumentException(yearStep + " can be minimum 1");
+        }
+
+        Map<Integer, List<User>> map = new HashMap<>();
+        users.forEach( user -> {
+            Integer category = null;
+            List<User> mapUsers = null;
+
+            if(user.getBirthday() != null){
+                int age = user.getBirthday().until(IsoChronology.INSTANCE.dateNow()).getYears();
+                if(age < 0){
+                    throw new IllegalArgumentException(user + " has negative age");
+                }
+                age = age == 0 ? yearStep : age;
+                int mod = age % yearStep;
+                category = ((mod == 0) ?  age : age + (yearStep - mod))  / yearStep;
+            }
+
+            if(map.containsKey(category)){
+                mapUsers = map.get(category);
+            }else{
+                mapUsers = new ArrayList<>();
+                map.put(category, mapUsers);
+            }
+
+            mapUsers.add(user);
+        });
+        return map;
+    }
+
+    public Map<Integer, List<User>> getAgeCategoriesOfAllUsersByGender(int yearStep, Gender gender) {
+        return getAgeCategories(dataStore.findUsers(u -> u.getGender() == gender), yearStep);
+    }
+
+    public Map<Integer, List<User>> getAgeCategoriesOfAllUsers( int yearStep) {
+        return getAgeCategories(dataStore.findAllUsers(), yearStep);
+    }
 
     private double getAverageAge(List<User> users) {
         int total = 0;
