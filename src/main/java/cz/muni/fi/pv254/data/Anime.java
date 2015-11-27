@@ -136,6 +136,6 @@ public class Anime implements MAL {
 
     @Override
     public String toString() {
-        return dbAnime.toString() + ", genres: " + genres.size();
+        return dbAnime.toString() + ", genres " + genres.size();
     }
 }

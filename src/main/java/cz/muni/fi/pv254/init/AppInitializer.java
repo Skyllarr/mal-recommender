@@ -8,6 +8,7 @@ import cz.muni.fi.pv254.data.AnimeEntry;
 import cz.muni.fi.pv254.data.User;
 import cz.muni.fi.pv254.data.enums.Gender;
 import cz.muni.fi.pv254.dataUtils.DataStore;
+import cz.muni.fi.pv254.repository.UserRepository;
 import cz.muni.fi.pv254.test.TestOneSlope;
 import cz.muni.fi.pv254.utils.StatisticsUtils;
 
@@ -41,8 +42,9 @@ class AppInitializer implements ServletContextListener {
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         // init
-        new TestOneSlope().run(oneSlope, dataStore);
-        //dataStore.fetchData();
+        dataStore.fetchDataForOneSlope();
+        List<User> users = dataStore.findAllUsers();
+        show(oneSlope.computeOneSlopeValues(dataStore.findUserByName("art_17").getAnimeEntries()));
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {

@@ -20,7 +20,7 @@ public class Utils {
     public static <K, V> void show(Map<K, V> map) {
         map.forEach((k, v)->{
             String s  = k == null ? null : k.toString().substring(0, Math.min(k.toString().length(), strLen));
-            System.out.println(String.format(": %" + strLen +"s", s) + ": " + v);
+            System.out.println(String.format("# %" + strLen +"s", s) + "# " + v);
         });
         System.out.println();
     }
@@ -28,7 +28,7 @@ public class Utils {
     public static  <K extends Comparable<? super K>, V> void showByListSize(Map<K, List<V>> map) {
         map = sortByKey(map);
         map.forEach((k, v)->{
-            System.out.println(":" + k + ": " + v.size());
+            System.out.println("#" + k + "# " + v.size());
         });
         System.out.println();
     }
@@ -39,6 +39,12 @@ public class Utils {
 
     public static void showSortedByKeys(Map<Object, Integer> map) {
         Map<Double, Integer> result = new HashMap<>();
+        map.entrySet().forEach((e) -> result.put(((Number)e.getKey()).doubleValue(), e.getValue()));
+        show(sortByKey(result));
+    }
+
+    public static void showSortedByKeysDouble(Map<Object, Double> map) {
+        Map<Double, Double> result = new HashMap<>();
         map.entrySet().forEach((e) -> result.put(((Number)e.getKey()).doubleValue(), e.getValue()));
         show(sortByKey(result));
     }

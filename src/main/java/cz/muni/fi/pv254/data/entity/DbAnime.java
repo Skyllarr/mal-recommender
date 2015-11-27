@@ -68,7 +68,7 @@ public class DbAnime extends IdEntity{
 
     @Override
     public String toString() {
-        return String.format("Anime - title: %s, imageLink %s, malId: %d, episodes: %d, type %s, popularity %d, ranked %d",
+        return String.format("Anime - title %s, imageLink %s, malId %d, episodes %d, type %s, popularity %d, ranked %d",
                 title, imageLink, malId, episodes, type == null ? "null" : type.name(), popularity, ranked);
     }
 }

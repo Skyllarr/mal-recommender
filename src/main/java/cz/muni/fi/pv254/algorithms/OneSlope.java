@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static cz.muni.fi.pv254.utils.Utils.show;
+
 /**
  * Created by skylar on 23.11.15.
  */
@@ -23,6 +25,7 @@ public class OneSlope {
     public boolean checkAnimeEntryListDifference(List<AnimeEntry> list1, List<AnimeEntry> list2) {
         boolean contains = false;
         boolean doesNotContain = false;
+
         for (AnimeEntry animeEntry : list1) {
             contains = contains || list2.contains(animeEntry);
             doesNotContain = doesNotContain || !list2.contains(animeEntry);
@@ -45,30 +48,24 @@ public class OneSlope {
     }
 
     public Map<Anime, Double> computeOneSlopeValues(List<AnimeEntry> userAnimeEntries) {
-        // dataStore.fetchData();
         Map<Anime, Pair<Double, Integer>> reccomendationValues = new HashMap<>();
         List<AnimeEntry> seenAnime = userAnimeEntries.stream().filter(a -> a.getNormalizedScore() != null).collect(Collectors.toList());
         List<Anime> unSeenAnime = dataStore.findAnimes(anime -> !seenAnime.contains(anime));
         List<User> intersectingUsers = dataStore.findUsers(u -> checkAnimeEntryListDifference(u.getAnimeEntries(), seenAnime));
-
-        double denominator = 1.0;
-        int usersContainingBothOperations = 0;
 
         for(AnimeEntry seenAnimeEntry : seenAnime) { //pre vsetky hodnotene anime Lucy
             for (Anime unseenAnime : unSeenAnime){ //pre vsetky anime co nehodnotila
                 double animeDifferenceCount = 0.0;
                 List<User> usersContainingBoth = intersectingUsers.stream().filter(u -> {
                     List<AnimeEntry> list = u.getAnimeEntries();
+                    list = list.stream().filter(a -> a.getNormalizedScore() != null).collect(Collectors.toList());
                     return list.contains(unseenAnime) && list.contains(seenAnimeEntry);
                 }).collect(Collectors.toList());
 
                 for (User user : usersContainingBoth) {
                     animeDifferenceCount += computeDifference(user.getAnimeEntries(), unseenAnime, seenAnimeEntry);
-                    usersContainingBothOperations++;
                 }
-                if (usersContainingBoth.size() == 0){
-                    reccomendationValues.put(unseenAnime, null);
-                }else{
+                if (usersContainingBoth.size() > 0){
                     int usersWithBoth = usersContainingBoth.size();
                     double averagedAnimeDifference = (animeDifferenceCount / usersWithBoth);
                     double nominator = usersWithBoth * (seenAnimeEntry.getNormalizedScore() + averagedAnimeDifference);
@@ -80,7 +77,6 @@ public class OneSlope {
                     } else {
                         reccomendationValues.put(unseenAnime, new Pair<>(nominator, usersWithBoth));
                     }
-
                 }
             }
         }

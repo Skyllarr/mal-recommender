@@ -51,6 +51,23 @@ public class DataStore {
         animeMalIdMap = animes.stream().collect(Collectors.toMap(Anime::getMalId, a -> a));
     }
 
+    public void fetchDataForOneSlope(){
+        animes = animeRepository.findAll();
+        animeMalIdMap = animes.stream().collect(Collectors.toMap(Anime::getMalId, a -> a));
+        animeEntries = new ArrayList<>();
+
+        users = userRepository.findAll();
+        users.forEach(u -> {
+            u.setAnimeEntries(u.getAnimeEntries()
+                    .stream()
+                    .filter(e  -> e.getScore() != null && e.getScore() != 0 )
+                    .collect(Collectors.toList()));
+        });
+        users = users.stream().filter(u -> u.getAnimeEntries().size() != 0).collect(Collectors.toList());
+        users.forEach(u -> animeEntries.addAll(u.getAnimeEntries()));
+
+    }
+
     public void flush(){
         userRepository.batchUpdate(users);
         animeRepository.batchUpdate(animes);
