@@ -45,7 +45,7 @@ public class Setup {
     private DataSource dataSource;
 
     // null == All Entries
-    public static final Long userMaxResultCount = null;
+    public static final Long userMaxResultCount = 10000l;
     public static final Long animeMaxResultCount = null;
 
     @Produces
