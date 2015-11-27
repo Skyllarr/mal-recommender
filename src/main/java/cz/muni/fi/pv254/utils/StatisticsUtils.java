@@ -42,7 +42,7 @@ public class StatisticsUtils {
     }
 
     public Map<Object, Integer> getDistributionOfEntriesByAllUsers() {
-        return dataStore.findAllUsers().stream().collect(Collectors.toMap(User::getMalId, a -> a.getAnimeEntries().size() ));
+        return dataStore.findAllUsers().stream().collect(Collectors.toMap(User::getId, a -> a.getAnimeEntries().size() ));
     }
 
     public Map<Object, Integer> getDistributionOfScore() {
@@ -111,19 +111,16 @@ public class StatisticsUtils {
     }
     */
 
-   /* public Genre getMostFavouriteGenreOfUsers(List<User> users) {
-        List<AnimeEntry> animeEntries = new ArrayList<AnimeEntry>();
-        for (User u : users) {
-            animeEntries.addAll(u.getAnimeEntries());
-        }
-        animeEntries.stream().filter(a -> a.getScore() == 10);
-        List<Anime> mostScoredAnime = animes.stream().filter(a -> animeEntries.contains(a)).collect(Collectors.toList());
-        List<Genre> genres = new ArrayList<>();
-        for(Anime anime : mostScoredAnime) {
-            genres.addAll(anime.getGenres());
-        }
-        return getDistribution(genres);
-    }*/
+
+    public Map<Object,  List<Genre>> getMostFavouriteGenreOffUsers(List<User> users) {
+        return users.stream().collect(Collectors.toMap(u -> u, a -> getFavoriteGenres(a.getAnimeEntries())));
+    }
+
+    private   List<Genre> getFavoriteGenres(List<AnimeEntry> entries) {
+        Map<Object, Integer> result = getDistribution(new ArrayList<>());
+        entries.stream().forEach(e -> mergeToDistribution(result, dataStore.findAnimeByMalId(e.getMalAnimeId()).getGenres()));
+        return Utils.sortByValue(result).keySet().stream().map(e -> (Genre)e).collect(Collectors.toList());
+    }
 
 
     private double getAverageAge(List<User> users) {

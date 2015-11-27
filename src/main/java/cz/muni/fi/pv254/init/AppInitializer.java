@@ -36,6 +36,12 @@ class AppInitializer implements ServletContextListener {
     }
 
     private void showStats() {
+        show("favourite genres of users");
+        show(stats.getMostFavouriteGenreOffUsers(dataStore.findAllUsers()));
+        show("most watched anime vs mal");
+        stats.getMostWatchedAnime().forEach((k, v)-> show(k.getMalId() + ": " + k.getPopularity() +": " + k.getRanked() + " : " + v));
+        show("count anime entries by user");
+        showSorted(stats.getDistributionOfEntriesByAllUsers());
         show("score");
         showSorted(stats.getDistributionOfScore());
         show("most watched anime");

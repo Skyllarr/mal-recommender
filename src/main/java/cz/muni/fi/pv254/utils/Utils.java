@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
  */
 public class Utils {
 
-    private static final int strLen = 1;
+    private static final int strLen = 9;
 
     public static String removeEmptyStr(String string) {
         return string != null && string.isEmpty() ? null : string;
@@ -37,9 +37,16 @@ public class Utils {
     }
 
 
-    private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue( Map<K, V> map ) {
+
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValueASC( Map<K, V> map ) {
         List<Map.Entry<K, V>> list = new LinkedList<>( map.entrySet() );
         Collections.sort( list, (o1, o2) -> (o1.getValue()).compareTo( o2.getValue() ));
+        return getKvMap(list);
+    }
+
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue( Map<K, V> map ) {
+        List<Map.Entry<K, V>> list = new LinkedList<>( map.entrySet() );
+        Collections.sort( list, (o1, o2) -> (o2.getValue()).compareTo( o1.getValue() ));
         return getKvMap(list);
     }
 

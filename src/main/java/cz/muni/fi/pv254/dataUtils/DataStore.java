@@ -29,6 +29,7 @@ public class DataStore {
     private List<User> users;
     private List<Anime> animes;
     private List<AnimeEntry>  animeEntries;
+    private Map<Long,Anime>  animeMalIdMap;
 
     public List<Anime> findAllAnimes() {
         return animes;
@@ -47,6 +48,7 @@ public class DataStore {
         animes = animeRepository.findAll();
         animeEntries = new ArrayList<>();
         users.forEach(u -> animeEntries.addAll(u.getAnimeEntries()));
+        animeMalIdMap = animes.stream().collect(Collectors.toMap(Anime::getMalId, a -> a));
     }
 
     public void flush(){
@@ -67,7 +69,7 @@ public class DataStore {
     }
 
     public Anime findAnimeByMalId(Long malId) {
-        return findAnime(a -> a.getMalId() != null && a.getMalId().longValue() ==  malId);
+        return animeMalIdMap.get(malId);
     }
 
     public User findUserByMalId(Long malId) {
