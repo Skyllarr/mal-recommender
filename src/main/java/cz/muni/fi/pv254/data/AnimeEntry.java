@@ -10,10 +10,10 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class AnimeEntry{
+public class AnimeEntry implements MAL{
 
     @SerializedName("m")
-    private Long malAnimeId;
+    private Long malId;
     @SerializedName("s")
     private Long score;
     @SerializedName("n")
@@ -24,17 +24,32 @@ public class AnimeEntry{
     public AnimeEntry() {
     }
 
-    public AnimeEntry(Long malAnimeId, Long score, AnimeEntryStatus status) {
+    public AnimeEntry(Long malId, Long score, AnimeEntryStatus status) {
         super();
-        this.malAnimeId = malAnimeId;
+        this.malId = malId;
         this.score = score;
         this.status = status;
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AnimeEntry || o instanceof Anime)) return false;
+
+        MAL entity = (MAL) o;
+
+        return malId != null && entity.getMalId() != null && malId.equals(entity.getMalId());
+    }
+
+    @Override
+    public int hashCode() {
+        return (malId != null) ? malId.intValue() : 0;
+    }
+
+    @Override
     public String toString() {
         return String.format("AnimeEntry - dbAnime's mal id: %s, score: %d, status %s",
-                malAnimeId,
+                malId,
                 score,
                 status == null ? "null" : status.name());
     }

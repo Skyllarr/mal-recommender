@@ -118,6 +118,22 @@ public class Anime implements MAL {
         dbAnime.setDeleted(deleted);
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AnimeEntry || o instanceof Anime)) return false;
+
+        MAL entity = (MAL) o;
+
+        return getMalId() != null && entity.getMalId() != null && getMalId().equals(entity.getMalId());
+    }
+
+    @Override
+    public int hashCode() {
+        return (getMalId() != null) ? getMalId().intValue() : 0;
+    }
+
     @Override
     public String toString() {
         return dbAnime.toString() + ", genres: " + genres.size();

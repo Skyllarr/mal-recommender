@@ -6,7 +6,6 @@ import cz.muni.fi.pv254.data.Anime;
 import cz.muni.fi.pv254.data.AnimeEntry;
 import cz.muni.fi.pv254.data.User;
 import cz.muni.fi.pv254.dataUtils.DataStore;
-import cz.muni.fi.pv254.utils.MemoryUsage;
 import cz.muni.fi.pv254.utils.StatisticsUtils;
 
 import javax.inject.Inject;

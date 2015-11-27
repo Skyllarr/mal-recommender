@@ -36,7 +36,7 @@ public class StatisticsUtils {
         Map<Long, Anime> map = dataStore.findAllAnimes().stream().collect(Collectors.toMap(Anime::getMalId, a -> a ));
 
         animeEntries.stream().forEach(a -> {
-            mergeToDistribution(result, map.get(a.getMalAnimeId()).getGenres());
+            mergeToDistribution(result, map.get(a.getMalId()).getGenres());
         });
         return result;
     }
@@ -77,7 +77,7 @@ public class StatisticsUtils {
         Map<Anime, Integer> result = new HashMap<>();
         getDistribution(dataStore.findAllAnimeEntries()
                 .stream()
-                .map(AnimeEntry::getMalAnimeId)
+                .map(AnimeEntry::getMalId)
                 .collect(Collectors.toList()))
                 .forEach((k,v) -> result.put(dataStore.findAnimeByMalId((Long)k), v));
         return result;
@@ -118,7 +118,7 @@ public class StatisticsUtils {
 
     private   List<Genre> getFavoriteGenres(List<AnimeEntry> entries) {
         Map<Object, Integer> result = getDistribution(new ArrayList<>());
-        entries.stream().forEach(e -> mergeToDistribution(result, dataStore.findAnimeByMalId(e.getMalAnimeId()).getGenres()));
+        entries.stream().forEach(e -> mergeToDistribution(result, dataStore.findAnimeByMalId(e.getMalId()).getGenres()));
         return Utils.sortByValue(result).keySet().stream().map(e -> (Genre)e).collect(Collectors.toList());
     }
 
