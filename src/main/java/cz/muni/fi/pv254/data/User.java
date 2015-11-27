@@ -67,7 +67,7 @@ public class User implements MAL {
     }
 
     public void setAnimeEntries(List<AnimeEntry> animeEntries) {
-        animeEntries = animeEntries;
+        this.animeEntries = animeEntries;
     }
 
     public DbUser getDbUser() {
@@ -75,7 +75,7 @@ public class User implements MAL {
     }
 
     public void setDbUser(DbUser dbUser) {
-        dbUser = dbUser;
+        this.dbUser = dbUser;
     }
 
     public Long getId() {

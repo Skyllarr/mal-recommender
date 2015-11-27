@@ -127,4 +127,12 @@ public class DataStore {
     private List<AnimeEntry> filterUnscoredEntries(List<AnimeEntry> entries){
         return entries.stream().filter(a -> a.getScore() > 0).collect(Collectors.toList());
     }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    public void setAnimes(List<Anime> animes) {
+        this.animes = animes;
+    }
 }
