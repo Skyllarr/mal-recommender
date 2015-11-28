@@ -2,6 +2,7 @@ package cz.muni.fi.pv254.dataUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.mysema.commons.lang.Pair;
 import cz.muni.fi.pv254.data.AnimeEntry;
 import cz.muni.fi.pv254.data.enums.Genre;
 
@@ -23,6 +24,12 @@ public class JsonParser {
     public static List<AnimeEntry> loadAsAnimeEntry(String entries){
         Gson gson = new Gson();
         Type listType = new TypeToken<ArrayList<AnimeEntry>>() {}.getType();
+        return (entries == null || "".equals(entries)) ?  new ArrayList<>() : gson.fromJson(entries, listType);
+    }
+
+    public static List<Pair<Long, Double>> loadAsDifferenceVector(String entries){
+        Gson gson = new Gson();
+        Type listType = new TypeToken<ArrayList<Pair<Long, Double>>>() {}.getType();
         return (entries == null || "".equals(entries)) ?  new ArrayList<>() : gson.fromJson(entries, listType);
     }
 

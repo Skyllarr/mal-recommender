@@ -1,5 +1,6 @@
 package cz.muni.fi.pv254.data;
 
+import com.mysema.commons.lang.Pair;
 import cz.muni.fi.pv254.data.entity.DbAnime;
 import cz.muni.fi.pv254.data.enums.AnimeType;
 import cz.muni.fi.pv254.data.enums.Genre;
@@ -14,20 +15,24 @@ public class Anime implements MAL {
 
     private DbAnime dbAnime;
     private List<Genre> genres;
+    private List<Pair<Long, Double>> differenceVector;
 
     public Anime() {
         dbAnime = new DbAnime();
         genres = new ArrayList<>();
+        differenceVector = new ArrayList<>();
     }
 
     public Anime(DbAnime dbAnime) {
         this.dbAnime = dbAnime;
-         this.genres = dbAnime.getGenreEntriesAsList();
+        this.genres = dbAnime.getGenreEntriesAsList();
+        differenceVector = dbAnime.getDifferenceVectorAsList();
     }
 
     public Anime(String title, String imageLink, Long malId, Long episodes, AnimeType type) {
         dbAnime = new DbAnime(title, imageLink, malId, episodes, type);
         genres = new ArrayList<>();
+        differenceVector = new ArrayList<>();
     }
 
     public Long getEpisodes() {
@@ -92,6 +97,14 @@ public class Anime implements MAL {
 
     public void setGenres(List<Genre> genres) {
         this.genres = genres;
+    }
+
+    public List<Pair<Long, Double>> getDifferenceVector() {
+        return differenceVector;
+    }
+
+    public void setDifferenceVector(List<Pair<Long, Double>> differenceVector) {
+        this.differenceVector = differenceVector;
     }
 
     public DbAnime getDbAnime() {

@@ -25,6 +25,7 @@ public class AnimeRepository {
 
     public Anime create(final Anime entity) throws Exception {
         updateGenres(entity);
+        updateDifferenceVector(entity);
         return convertToAnime(dbAnimeRepository.create(entity.getDbAnime()));
     }
 
@@ -34,6 +35,7 @@ public class AnimeRepository {
 
     public Anime update(final Anime entity) {
         updateGenres(entity);
+        updateDifferenceVector(entity);
         DbAnime dbAnime = dbAnimeRepository.update(entity.getDbAnime());
         entity.setDbAnime(dbAnime);
         return dbAnime == null ? null : entity;
@@ -49,11 +51,13 @@ public class AnimeRepository {
 
     public List<Anime> batchCreate(List<Anime> entities) throws Exception {
         updateGenres(entities);
+        updateDifferenceVector(entities);
         return convert(dbAnimeRepository.batchCreate(reverseConvert(entities)));
     }
 
     public List<Anime> batchUpdate(List<Anime> entities) {
         updateGenres(entities);
+        updateDifferenceVector(entities);
         return convert(dbAnimeRepository.batchUpdate(reverseConvert(entities)));
     }
 
@@ -81,5 +85,13 @@ public class AnimeRepository {
 
     private void updateGenres(Anime entity) {
         entity.getDbAnime().setGenreEntriesAsString(entity.getGenres());
+    }
+
+    private void updateDifferenceVector(List<Anime> entities) {
+        entities.forEach(this::updateDifferenceVector);
+    }
+
+    private void updateDifferenceVector(Anime entity) {
+        entity.getDbAnime().setDifferenceVectorAsString(entity.getDifferenceVector());
     }
 }

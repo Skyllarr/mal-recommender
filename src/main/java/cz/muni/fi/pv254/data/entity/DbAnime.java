@@ -1,5 +1,6 @@
 package cz.muni.fi.pv254.data.entity;
 
+import com.mysema.commons.lang.Pair;
 import cz.muni.fi.pv254.data.enums.AnimeType;
 import cz.muni.fi.pv254.data.enums.Genre;
 import cz.muni.fi.pv254.dataUtils.JsonParser;
@@ -28,6 +29,9 @@ public class DbAnime extends IdEntity{
     private Long malId;
     @Column(name = "genre_entries")
     private String genreEntries;
+    @Column(name = "difference_vector")
+    private String differenceVector;
+
     private Long episodes;
     private AnimeType type;
     private Long popularity;
@@ -49,7 +53,9 @@ public class DbAnime extends IdEntity{
     public void setGenreEntries(String genreEntries) {
         this.genreEntries = Utils.removeEmptyStr(genreEntries);
     }
-
+    public void setDifferenceVector(String differenceVector) {
+        this.differenceVector = Utils.removeEmptyStr(differenceVector);
+    }
     public void setImageLink(String imageLink) {
         this.imageLink = Utils.removeEmptyStr(imageLink);
     }
@@ -58,12 +64,21 @@ public class DbAnime extends IdEntity{
         this.title = Utils.removeEmptyStr(title);
     }
 
+
     public List<Genre> getGenreEntriesAsList() {
         return JsonParser.loadAsGenre(genreEntries);
     }
 
     public void setGenreEntriesAsString(List<Genre> genre) {
         setGenreEntries(JsonParser.save(genre));
+    }
+
+    public List<Pair<Long, Double>> getDifferenceVectorAsList() {
+        return JsonParser.loadAsDifferenceVector(differenceVector);
+    }
+
+    public void setDifferenceVectorAsString(List<Pair<Long, Double>> differenceVector) {
+        setDifferenceVector(JsonParser.save(differenceVector));
     }
 
     @Override

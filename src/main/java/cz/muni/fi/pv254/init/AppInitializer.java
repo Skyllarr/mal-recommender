@@ -2,9 +2,7 @@ package cz.muni.fi.pv254.init;
 
 import com.mysema.commons.lang.Pair;
 import cz.muni.fi.pv254.algorithms.Normalizer;
-import cz.muni.fi.pv254.algorithms.OneSlope;
 import cz.muni.fi.pv254.algorithms.OneSlopeDb;
-import cz.muni.fi.pv254.algorithms.TextAnalyzer;
 import cz.muni.fi.pv254.data.Anime;
 import cz.muni.fi.pv254.data.AnimeEntry;
 import cz.muni.fi.pv254.data.User;
