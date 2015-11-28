@@ -8,9 +8,7 @@ import cz.muni.fi.pv254.repository.UserRepository;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -46,9 +44,7 @@ public class DataStore {
     public void fetchData(){
         users = userRepository.findAll();
         animes = animeRepository.findAll();
-        animeEntries = new ArrayList<>();
-        users.forEach(u -> animeEntries.addAll(u.getAnimeEntries()));
-        animeMalIdMap = animes.stream().collect(Collectors.toMap(Anime::getMalId, a -> a));
+        prepareAnimeMalIdMap();
     }
 
     public void flush(){
@@ -65,7 +61,7 @@ public class DataStore {
     }
 
     public Anime findAnimeById(Long Id){
-        return findAnime(a -> a.getId() != null && a.getId().longValue() ==  Id);
+        return findAnime(a -> a.getId() != null && a.getId().longValue() == Id);
     }
 
     public Anime findAnimeByMalId(Long malId) {
@@ -73,7 +69,7 @@ public class DataStore {
     }
 
     public User findUserByMalId(Long malId) {
-        return findUser(u -> u.getMalId() != null && u.getMalId().longValue() ==  malId);
+        return findUser(u -> u.getMalId() != null && u.getMalId().longValue() == malId);
     }
 
     public void deleteDbUser(Long id) throws Exception {
@@ -128,11 +124,24 @@ public class DataStore {
         return entries.stream().filter(a -> a.getScore() > 0).collect(Collectors.toList());
     }
 
-    public void setUsers(List<User> users) {
+    public Map<Long,Map<AnimeEntry, AnimeEntry>> getUsersAsMapOfMaps() {
+        return users.stream().collect(Collectors.toMap(User::getId, u -> u.getAnimeEntries()
+                .stream().collect(Collectors.toMap(e -> e, e -> e))));
+    }
+
+    public void setData(List<User> users, List<Anime> animes) {
         this.users = users;
+        this.animes = animes;
+        prepareAnimeMalIdMap();
     }
 
     public void setAnimes(List<Anime> animes) {
         this.animes = animes;
+    }
+
+    private void prepareAnimeMalIdMap() {
+        animeEntries = new ArrayList<>();
+        users.forEach(u -> animeEntries.addAll(u.getAnimeEntries()));
+        animeMalIdMap = animes.stream().collect(Collectors.toMap(Anime::getMalId, a -> a));
     }
 }

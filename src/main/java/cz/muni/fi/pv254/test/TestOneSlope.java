@@ -1,12 +1,11 @@
 package cz.muni.fi.pv254.test;
 
-import cz.muni.fi.pv254.algorithms.OneSlope;
+import com.mysema.commons.lang.Pair;
+import cz.muni.fi.pv254.algorithms.OneSlopeDb;
 import cz.muni.fi.pv254.data.Anime;
 import cz.muni.fi.pv254.data.AnimeEntry;
 import cz.muni.fi.pv254.data.User;
 import cz.muni.fi.pv254.dataUtils.DataStore;
-import cz.muni.fi.pv254.repository.AnimeRepository;
-import cz.muni.fi.pv254.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +18,22 @@ import static cz.muni.fi.pv254.utils.Utils.show;
 public class TestOneSlope {
 
 
-    public static void run(OneSlope oneSlope, DataStore dataStore) {
+    public static void run(OneSlopeDb oneSlopeDb, DataStore dataStore) {
 
         User John = new User();
         User Mark = new User();
         User Lucy = new User();
         User Jessica = new User();
+
+        John.setMalId(1l);
+        Mark.setMalId(2l);
+        Lucy.setMalId(3l);
+        Jessica.setMalId(4l);
+
+        John.setId(1l);
+        Mark.setId(2l);
+        Lucy.setId(3l);
+        Jessica.setId(4l);
 
         Anime anime1 = new Anime();
         Anime anime2 = new Anime();
@@ -103,7 +112,7 @@ public class TestOneSlope {
         List<User> users = new ArrayList<>();
         users.add(John);
         users.add(Mark);
-        users.add(Lucy);
+        //users.add(Lucy);
         users.add(Jessica);
 
         List<Anime> anime = new ArrayList<>();
@@ -111,10 +120,11 @@ public class TestOneSlope {
         anime.add(anime3);
         anime.add(anime2);
         anime.add(anime4);
-        dataStore.setUsers(users);
-        dataStore.setAnimes(anime);
-        List<Double> oneSlopeValues = new ArrayList<>();
-        show(oneSlope.computeOneSlopeValues(lucyAnimes));
+        dataStore.setData(users, anime);
+        //dataStore.setAnimes(anime);
+        //List<Double> oneSlopeValues = new ArrayList<>();
+        List<Pair<Long, List<Pair<Integer, Double>>>> storage = oneSlopeDb.computeDb(dataStore);
+        List<Pair<Long, Double>> results = oneSlopeDb.computeUser(lucyAnimes, dataStore, storage);
 
     }
 }

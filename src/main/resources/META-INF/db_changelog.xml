@@ -136,4 +136,18 @@
         <dropTable tableName="mal_anime_entry"/>
     </changeSet>
 
+  <!--  <changeSet id="malr:15" author="skylar">
+    <createTable tableName="mal_anime">
+        <column name="id" type="bigint">
+            <constraints nullable="false" primaryKey="true"/>
+        </column>
+        <column name="mal_id" type="bigint"/>
+        <column name="type" type="bigint"/>
+        <column name="episodes" type="bigint"/>
+        <column name="title" type="varchar(500)"/>
+        <column name="image_link" type="varchar(200)"/>
+        <column name="deleted" type="boolean"/>
+    </createTable>
+</changeSet>  -->
+
 </databaseChangeLog>
