@@ -36,10 +36,10 @@ public class OneSlopeDb {
     public Integer getIndex(List<Long> listOfIds, AnimeEntry anime) {
         Long index = 0l;
         for (Long id : listOfIds) {
-            index++;
             if (id == anime.getMalId()) {
                 return Ints.checkedCast(index);
             }
+            index++;
         }
         return null;
     }
@@ -49,8 +49,8 @@ public class OneSlopeDb {
         List<Pair<Long, Double>> recommValues = new ArrayList<>();
 
         Double value;
-        double nominator = 0l;
-        double denominator = 0l;
+        double nominator = 0;
+        double denominator = 0;
         for(Anime unSeenAnime : dataStore.findAnimes(anime -> !entries.contains(anime))) { // anime co nevidela
             List<Pair<Integer, Double>> row = findRow(storage, unSeenAnime); //najdi riadok unSeenAnime
             for (AnimeEntry seenAnime : entries) { //anime co videla
@@ -59,8 +59,9 @@ public class OneSlopeDb {
                 nominator += dbUnseenSeen.getFirst() * (seenAnime.getNormalizedScore() + dbUnseenSeen.getSecond());
                 denominator += dbUnseenSeen.getFirst();
             }
-
             recommValues.add(new Pair<>(unSeenAnime.getMalId(), nominator / denominator));
+            nominator = 0;
+            denominator = 0;
         }
         return recommValues;
     }
@@ -79,6 +80,7 @@ public class OneSlopeDb {
             storage.add(new Pair<>(anime1.getMalId(),animeDiff));
             for (Anime anime2 : animes) {
                 if (anime1.equals(anime2)) {
+                    animeDiff.add(null);
                     continue;
                 }
                 filterAnime(usersWithBothAnimes, dumpedUsers2, anime1, anime2);
@@ -87,7 +89,8 @@ public class OneSlopeDb {
                     animeDifferenceCount += processedUser.get(anime1).getNormalizedScore() -
                             processedUser.get(anime2).getNormalizedScore();
                 }
-                Pair<Integer, Double> pair = usersWithBothAnimes.size() == 0 ? null : new Pair<>(usersWithBothAnimes.size(), animeDifferenceCount);
+                boolean zeroSize = usersWithBothAnimes.size() == 0;
+                Pair<Integer, Double> pair = new Pair<>(zeroSize ? 0 : usersWithBothAnimes.size(), zeroSize ? 0 : (animeDifferenceCount / usersWithBothAnimes.size()));
                 animeDiff.add(pair);
                 usersWithBothAnimes.putAll(dumpedUsers2);
                 dumpedUsers2.clear();

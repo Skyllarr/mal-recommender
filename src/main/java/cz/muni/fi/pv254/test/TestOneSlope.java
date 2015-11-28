@@ -117,8 +117,8 @@ public class TestOneSlope {
 
         List<Anime> anime = new ArrayList<>();
         anime.add(anime1);
-        anime.add(anime3);
         anime.add(anime2);
+        anime.add(anime3);
         anime.add(anime4);
         dataStore.setData(users, anime);
         //dataStore.setAnimes(anime);
