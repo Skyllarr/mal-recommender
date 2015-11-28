@@ -2,10 +2,11 @@ package cz.muni.fi.pv254.algorithms;
 
 import com.mysema.commons.lang.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
-
-import static cz.muni.fi.pv254.utils.Utils.*;
 
 /**
  * Created by suomiy on 11/27/15.

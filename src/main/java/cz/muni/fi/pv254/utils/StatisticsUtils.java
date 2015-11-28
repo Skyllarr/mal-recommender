@@ -10,7 +10,10 @@ import cz.muni.fi.pv254.dataUtils.DataStore;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.time.chrono.IsoChronology;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**

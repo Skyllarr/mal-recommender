@@ -7,13 +7,10 @@ import cz.muni.fi.pv254.data.User;
 import cz.muni.fi.pv254.dataUtils.DataStore;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static cz.muni.fi.pv254.utils.Utils.show;
 
 /**
  * Created by skylar on 23.11.15.

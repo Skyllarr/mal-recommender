@@ -30,6 +30,13 @@ public class DbUserRepository extends Repository<DbUser> {
         super(em, maxResultCount, DbUser.class, QDbUser.dbUser);
     }
 
+    @Override
+    public List<DbUser> findAll() {
+        QDbUser dbUser = QDbUser.dbUser;
+        JPAQuery query = new JPAQuery(em).from(dbUser).where(dbUser.deleted.isFalse());
+
+        return maxResultCount == null ?  query.list(dbUser) : query.limit(maxResultCount).list(dbUser);
+    }
 
     public DbUser findByName(String name) {
         QDbUser dbUser = QDbUser.dbUser;

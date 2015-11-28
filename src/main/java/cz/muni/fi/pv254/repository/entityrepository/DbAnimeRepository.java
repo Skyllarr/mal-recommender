@@ -30,6 +30,14 @@ public class DbAnimeRepository extends Repository<DbAnime> {
         super(em, maxResultCount, DbAnime.class, QDbAnime.dbAnime);
     }
 
+    @Override
+    public List<DbAnime> findAll() {
+        QDbAnime dbAnime = QDbAnime.dbAnime;
+        JPAQuery query = new JPAQuery(em).from(dbAnime).where(dbAnime.deleted.isFalse());
+
+        return maxResultCount == null ?  query.list(dbAnime) : query.limit(maxResultCount).list(dbAnime);
+    }
+
     public DbAnime findByMalId(Long malId) {
         QDbAnime dbAnime = QDbAnime.dbAnime;
 

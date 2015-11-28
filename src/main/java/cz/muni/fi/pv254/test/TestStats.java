@@ -1,19 +1,10 @@
 package cz.muni.fi.pv254.test;
 
-import cz.muni.fi.pv254.algorithms.OneSlope;
-import cz.muni.fi.pv254.data.Anime;
-import cz.muni.fi.pv254.data.AnimeEntry;
-import cz.muni.fi.pv254.data.User;
 import cz.muni.fi.pv254.data.enums.Gender;
 import cz.muni.fi.pv254.dataUtils.DataStore;
 import cz.muni.fi.pv254.utils.StatisticsUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static cz.muni.fi.pv254.utils.Utils.*;
-import static cz.muni.fi.pv254.utils.Utils.show;
-import static cz.muni.fi.pv254.utils.Utils.showSorted;
 
 /**
  * Created by suomiy on 24.11.15.

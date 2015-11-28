@@ -1,11 +1,6 @@
 package cz.muni.fi.pv254.test;
 
-import cz.muni.fi.pv254.algorithms.OneSlope;
 import cz.muni.fi.pv254.algorithms.TextAnalyzer;
-import cz.muni.fi.pv254.data.Anime;
-import cz.muni.fi.pv254.data.AnimeEntry;
-import cz.muni.fi.pv254.data.User;
-import cz.muni.fi.pv254.dataUtils.DataStore;
 
 import java.util.ArrayList;
 import java.util.List;
