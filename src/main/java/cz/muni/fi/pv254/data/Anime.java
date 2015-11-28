@@ -15,7 +15,7 @@ public class Anime implements MAL {
 
     private DbAnime dbAnime;
     private List<Genre> genres;
-    private List<Pair<Long, Double>> differenceVector;
+    private List<Pair<Integer, Double>> differenceVector;
 
     public Anime() {
         dbAnime = new DbAnime();
@@ -99,11 +99,11 @@ public class Anime implements MAL {
         this.genres = genres;
     }
 
-    public List<Pair<Long, Double>> getDifferenceVector() {
+    public List<Pair<Integer, Double>> getDifferenceVector() {
         return differenceVector;
     }
 
-    public void setDifferenceVector(List<Pair<Long, Double>> differenceVector) {
+    public void setDifferenceVector(List<Pair<Integer, Double>> differenceVector) {
         this.differenceVector = differenceVector;
     }
 

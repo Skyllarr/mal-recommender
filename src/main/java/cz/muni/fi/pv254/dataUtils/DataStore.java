@@ -42,9 +42,28 @@ public class DataStore {
     }
 
     public void fetchData(){
-        users = userRepository.findAll();
         animes = animeRepository.findAll();
+        animes.sort((a,b) -> a.getMalId().compareTo(b.getMalId()));
+        users = userRepository.findAll();
         prepareAnimeMalIdMap();
+    }
+
+    public void partialFetchData(){
+        animes = animeRepository.findAll();
+        animes.sort((a,b) -> a.getMalId().compareTo(b.getMalId()));
+        users = userRepository.findAll();
+        prepareAnimeMalIdMap();
+
+        users.forEach(u -> {
+            List<AnimeEntry> entries = u.getAnimeEntries();
+            for (Iterator<AnimeEntry> iterator = entries.iterator(); iterator.hasNext();) {
+                AnimeEntry entry = iterator.next();
+                if(entry.getScore() == null || entry.getScore() == 0 || !animeMalIdMap.containsKey(entry.getMalId())){
+                    iterator.remove();
+                }
+            }
+        });
+
     }
 
     public void flush(){
@@ -132,6 +151,7 @@ public class DataStore {
     public void setData(List<User> users, List<Anime> animes) {
         this.users = users;
         this.animes = animes;
+        animes.sort((a,b) -> a.getMalId().compareTo(b.getMalId()));
         prepareAnimeMalIdMap();
     }
 
@@ -142,6 +162,6 @@ public class DataStore {
     private void prepareAnimeMalIdMap() {
         animeEntries = new ArrayList<>();
         users.forEach(u -> animeEntries.addAll(u.getAnimeEntries()));
-        animeMalIdMap = animes.stream().collect(Collectors.toMap(Anime::getMalId, a -> a));
+        animeMalIdMap = animes.stream().collect(Collectors.toMap(Anime::getMalId, a -> a, (a,b) -> a,TreeMap::new));
     }
 }

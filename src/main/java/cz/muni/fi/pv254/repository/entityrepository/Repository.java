@@ -3,8 +3,11 @@ package cz.muni.fi.pv254.repository.entityrepository;
 import com.mysema.query.jpa.JPQLQuery;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.path.EntityPathBase;
+import cz.muni.fi.pv254.data.User;
 import cz.muni.fi.pv254.data.entity.IdEntity;
+import cz.muni.fi.pv254.dataUtils.DataStore;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import java.util.ArrayList;
@@ -16,7 +19,8 @@ public abstract class Repository<E extends IdEntity> {
     protected Class<E> entityClass;
     protected EntityPathBase<E> entityPathBase;
 
-
+    @Inject
+    DataStore dataStore;
     private final Long maxResultCount;
 
     public Repository() {

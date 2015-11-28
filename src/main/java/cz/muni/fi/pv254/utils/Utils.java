@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class Utils {
 
-    private static final int strLen = 30;
+    private static final int strLen = 100;
 
     public static String removeEmptyStr(String string) {
         return string != null && string.isEmpty() ? null : string;
@@ -34,6 +34,10 @@ public class Utils {
     }
 
     public static <K> void showSorted(Map<K, Integer> map) {
+        show(sortByValue(map));
+    }
+
+    public static <K> void showSortedDouble(Map<K, Double> map) {
         show(sortByValue(map));
     }
 

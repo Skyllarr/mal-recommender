@@ -14,13 +14,9 @@ import java.util.OptionalDouble;
 /**
  * Created by skylar on 22.11.15.
  */
-@ApplicationScoped
 public class Normalizer {
 
-    @Inject
-    DataStore dataStore;
-
-    public void normalize() {
+    public void normalize(DataStore dataStore) {
         List<AnimeEntry>  entries = dataStore.findAllAnimeEntriesWithScore();
         Map<User, List<AnimeEntry>> usersEntries = dataStore.findUsersWithEntriesWithScore();
 
@@ -33,13 +29,10 @@ public class Normalizer {
             }
 
             Double userAverage = calculateAverage(animeEntries);
-
             Double normalizationValue = average / userAverage;
 
             animeEntries.forEach( a -> a.setNormalizedScore( a.getScore() * normalizationValue));
         }
-
-        dataStore.flush();
     }
 
     private Double calculateAverage(List<AnimeEntry> list){

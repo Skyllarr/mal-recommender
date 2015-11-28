@@ -27,9 +27,9 @@ public class JsonParser {
         return (entries == null || "".equals(entries)) ?  new ArrayList<>() : gson.fromJson(entries, listType);
     }
 
-    public static List<Pair<Long, Double>> loadAsDifferenceVector(String entries){
+    public static List<Pair<Integer, Double>> loadAsDifferenceVector(String entries){
         Gson gson = new Gson();
-        Type listType = new TypeToken<ArrayList<Pair<Long, Double>>>() {}.getType();
+        Type listType = new TypeToken<ArrayList<Pair<Integer, Double>>>() {}.getType();
         return (entries == null || "".equals(entries)) ?  new ArrayList<>() : gson.fromJson(entries, listType);
     }
 

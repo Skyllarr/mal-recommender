@@ -1,101 +1,109 @@
 package cz.muni.fi.pv254.algorithms;
 
+import com.google.common.primitives.Ints;
 import com.mysema.commons.lang.Pair;
 import cz.muni.fi.pv254.data.Anime;
 import cz.muni.fi.pv254.data.AnimeEntry;
 import cz.muni.fi.pv254.data.User;
 import cz.muni.fi.pv254.dataUtils.DataStore;
 
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.xml.crypto.Data;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static cz.muni.fi.pv254.utils.Utils.show;
+
 /**
- * Created by skylar on 23.11.15.
+ * Created by skylar on 27.11.15.
  */
+
 public class OneSlope {
-    @Inject
-    DataStore dataStore;
+    private DataStore dataStore;
+    private boolean debug;
 
-    public boolean checkAnimeEntryListDifference(List<AnimeEntry> list1, List<AnimeEntry> list2) {
-        boolean contains = false;
-        boolean doesNotContain = false;
+    public OneSlope(DataStore dataStore, boolean debug) {
+        this.dataStore = dataStore;
+        this.debug = debug;
+    }
 
-        for (AnimeEntry animeEntry : list1) {
-            contains = contains || list2.contains(animeEntry);
-            doesNotContain = doesNotContain || !list2.contains(animeEntry);
-            if (contains && doesNotContain)
-                return true;
+    public Map<Anime, Double> recommendToUser(User user) {
+        List<AnimeEntry> entries = user.getAnimeEntries();
+        Map<Long, Integer>  mapOfIds = new HashMap<>();
+        List<Anime> animeList = dataStore.findAllAnimes();
+        for(int i = 0; i < animeList.size(); i++){
+            mapOfIds.put(animeList.get(i).getMalId(), i);
         }
-        return false;
-    }
 
-    public boolean checkIfContainsScore(List<AnimeEntry> list, Anime anime, AnimeEntry animeEntry) {
-        return list.contains(anime) && list.contains(animeEntry);
-    }
+        List<Pair<Long, Double>> recommValues = new ArrayList<>();
+        double nominator = 0;
+        double denominator = 0;
 
-    public Double getScoreOfAnimeWithMalId (List<AnimeEntry> animeEntries, Long malId) {
-        for (AnimeEntry animeEntry : animeEntries) {
-            if (animeEntry.getMalId() == malId)
-                return animeEntry.getNormalizedScore();
+        for(Anime unSeenAnime : dataStore.findAnimes(anime -> !entries.contains(anime))) { // anime co nevidela
+            List<Pair<Integer, Double>> row = unSeenAnime.getDifferenceVector(); //najdi riadok unSeenAnime
+
+            for (AnimeEntry seenAnime : entries) { //anime co videla
+                Pair<Integer, Double> dbUnseenSeen = row.get(mapOfIds.get(seenAnime.getMalId()));
+                if (dbUnseenSeen == null) {
+                    continue;
+                }
+
+                nominator += dbUnseenSeen.getFirst() * (seenAnime.getNormalizedScore() + dbUnseenSeen.getSecond());
+                denominator += dbUnseenSeen.getFirst();
+            }
+            recommValues.add(new Pair<>(unSeenAnime.getMalId(), denominator == 0 ? 0 : nominator / denominator));
+            nominator = 0;
+            denominator = 0;
         }
-        return null;
+
+        return recommValues.stream().collect(Collectors.toMap( p -> dataStore.findAnimeByMalId(p.getFirst()), Pair::getSecond));
     }
 
-    public Map<Anime, Double> computeOneSlopeValues(List<AnimeEntry> userAnimeEntries) {
-        Map<Anime, Pair<Double, Integer>> reccomendationValues = new HashMap<>();
-        List<AnimeEntry> seenAnime = userAnimeEntries.stream().filter(a -> a.getNormalizedScore() != null).collect(Collectors.toList());
-        List<Anime> unSeenAnime = dataStore.findAnimes(anime -> !seenAnime.contains(anime));
-        List<User> intersectingUsers = dataStore.findUsers(u -> checkAnimeEntryListDifference(u.getAnimeEntries(), seenAnime));
+    public void preProcess() {
 
-        for(AnimeEntry seenAnimeEntry : seenAnime) { //pre vsetky hodnotene anime Lucy
-            for (Anime unseenAnime : unSeenAnime){ //pre vsetky anime co nehodnotila
+        Map<Long,Map<AnimeEntry, AnimeEntry>> usersWithBothAnimes = dataStore.getUsersAsMapOfMaps();
+        List<Anime> animes = dataStore.findAllAnimes();
+        Map<Long,Map<AnimeEntry, AnimeEntry>> dumpedUsers = new HashMap<>();
+        int debugCount = 0;
+
+        for (Anime anime1 : animes) {
+            List<Pair<Integer, Double>> animeDiff = anime1.getDifferenceVector();
+            animeDiff.clear();
+            for (Anime anime2 : animes) {
+                if (anime1.equals(anime2)) {
+                    animeDiff.add(null);
+                    continue;
+                }
+                filterAnime(usersWithBothAnimes, dumpedUsers, anime1, anime2);
                 double animeDifferenceCount = 0.0;
-                List<User> usersContainingBoth = intersectingUsers.stream().filter(u -> {
-                    List<AnimeEntry> list = u.getAnimeEntries();
-                    list = list.stream().filter(a -> a.getNormalizedScore() != null).collect(Collectors.toList());
-                    return list.contains(unseenAnime) && list.contains(seenAnimeEntry);
-                }).collect(Collectors.toList());
 
-                for (User user : usersContainingBoth) {
-                    animeDifferenceCount += computeDifference(user.getAnimeEntries(), unseenAnime, seenAnimeEntry);
+                for (Map<AnimeEntry, AnimeEntry> processedUser : usersWithBothAnimes.values()) {
+                    animeDifferenceCount += processedUser.get(anime1).getNormalizedScore() -
+                            processedUser.get(anime2).getNormalizedScore();
                 }
-                if (usersContainingBoth.size() > 0){
-                    int usersWithBoth = usersContainingBoth.size();
-                    double averagedAnimeDifference = (animeDifferenceCount / usersWithBoth);
-                    double nominator = usersWithBoth * (seenAnimeEntry.getNormalizedScore() + averagedAnimeDifference);
+                boolean zeroSize = usersWithBothAnimes.size() == 0;
+                Pair<Integer, Double> pair = new Pair<>(zeroSize ? 0 : usersWithBothAnimes.size(), zeroSize ? 0 : (animeDifferenceCount / usersWithBothAnimes.size()));
+                animeDiff.add(pair);
+                usersWithBothAnimes.putAll(dumpedUsers);
+                dumpedUsers.clear();
+            }
 
-                    if (reccomendationValues.containsKey(unseenAnime)) {
-                        Pair<Double, Integer> mapValue = reccomendationValues.get(unseenAnime);
-                        reccomendationValues.put(unseenAnime,
-                                new Pair<>(mapValue.getFirst() + nominator, mapValue.getSecond() + usersWithBoth));
-                    } else {
-                        reccomendationValues.put(unseenAnime, new Pair<>(nominator, usersWithBoth));
-                    }
-                }
+            if(debug){
+                show(++debugCount + " / " + animes.size());
             }
         }
-        return reccomendationValues.entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getFirst() / e.getValue().getSecond()));
     }
 
-    public Double computeDifference(List<AnimeEntry> entriesUser1, Anime anime, AnimeEntry entry) {
-        AnimeEntry commonEntry = null;
-        AnimeEntry unCommonEntry = null;
+    private void filterAnime(Map<Long,Map<AnimeEntry, AnimeEntry>> usersWithBothAnimes,
+                             Map<Long,Map<AnimeEntry, AnimeEntry>> dumpedByAnime1, Anime anime1, Anime anime2) {
+        for (Iterator<Map.Entry<Long, Map<AnimeEntry, AnimeEntry>>> it = usersWithBothAnimes.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<Long, Map<AnimeEntry, AnimeEntry>> entry = it.next();
+            Map<AnimeEntry, AnimeEntry> entries = entry.getValue();
+            Long key =entry.getKey();
 
-        for (AnimeEntry scoredAnime : entriesUser1) {
-
-            if(scoredAnime.equals(entry)) {
-                commonEntry = scoredAnime;
-            }
-            if(scoredAnime.equals(anime)) {
-                unCommonEntry = scoredAnime;
+            if (!(entries.containsKey(anime1) && entries.containsKey(anime2))) {
+                dumpedByAnime1.put(key, entries);
+                it.remove();
             }
         }
-
-        return unCommonEntry.getNormalizedScore() - commonEntry.getNormalizedScore();
     }
 }

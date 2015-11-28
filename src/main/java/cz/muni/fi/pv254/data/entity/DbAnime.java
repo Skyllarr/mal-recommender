@@ -53,9 +53,11 @@ public class DbAnime extends IdEntity{
     public void setGenreEntries(String genreEntries) {
         this.genreEntries = Utils.removeEmptyStr(genreEntries);
     }
+
     public void setDifferenceVector(String differenceVector) {
         this.differenceVector = Utils.removeEmptyStr(differenceVector);
     }
+
     public void setImageLink(String imageLink) {
         this.imageLink = Utils.removeEmptyStr(imageLink);
     }
@@ -73,11 +75,11 @@ public class DbAnime extends IdEntity{
         setGenreEntries(JsonParser.save(genre));
     }
 
-    public List<Pair<Long, Double>> getDifferenceVectorAsList() {
+    public List<Pair<Integer, Double>> getDifferenceVectorAsList() {
         return JsonParser.loadAsDifferenceVector(differenceVector);
     }
 
-    public void setDifferenceVectorAsString(List<Pair<Long, Double>> differenceVector) {
+    public void setDifferenceVectorAsString(List<Pair<Integer, Double>> differenceVector) {
         setDifferenceVector(JsonParser.save(differenceVector));
     }
 

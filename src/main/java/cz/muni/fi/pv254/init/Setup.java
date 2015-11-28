@@ -46,7 +46,7 @@ public class Setup {
 
     // null == All Entries
     public static final Long userMaxResultCount = null;
-    public static final Long animeMaxResultCount = null;
+    public static final Long animeMaxResultCount = null;//200L
 
     @Produces
     @LiquibaseType

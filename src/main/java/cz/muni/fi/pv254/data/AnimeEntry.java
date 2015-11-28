@@ -48,8 +48,9 @@ public class AnimeEntry implements MAL{
 
     @Override
     public String toString() {
-        return String.format("AnimeEntry - dbAnime's mal id: %s, score: %d, status %s",
+        return String.format("AnimeEntry - dbAnime's mal id: %s, normalized score: %s, score: %d, status %s",
                 malId,
+                normalizedScore,
                 score,
                 status == null ? "null" : status.name());
     }

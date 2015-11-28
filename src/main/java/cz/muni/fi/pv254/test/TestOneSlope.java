@@ -1,7 +1,6 @@
 package cz.muni.fi.pv254.test;
 
-import com.mysema.commons.lang.Pair;
-import cz.muni.fi.pv254.algorithms.OneSlopeDb;
+import cz.muni.fi.pv254.algorithms.OneSlope;
 import cz.muni.fi.pv254.data.Anime;
 import cz.muni.fi.pv254.data.AnimeEntry;
 import cz.muni.fi.pv254.data.User;
@@ -18,7 +17,7 @@ import static cz.muni.fi.pv254.utils.Utils.show;
 public class TestOneSlope {
 
 
-    public static void run(OneSlopeDb oneSlopeDb, DataStore dataStore) {
+    public static void run(DataStore dataStore) {
 
         User John = new User();
         User Mark = new User();
@@ -123,8 +122,9 @@ public class TestOneSlope {
         dataStore.setData(users, anime);
         //dataStore.setAnimes(anime);
         //List<Double> oneSlopeValues = new ArrayList<>();
-        List<Pair<Long, List<Pair<Integer, Double>>>> storage = oneSlopeDb.computeDb(dataStore);
-        List<Pair<Long, Double>> results = oneSlopeDb.computeUser(lucyAnimes, dataStore, storage);
+        OneSlope oneSlope = new OneSlope(dataStore, true);
+        oneSlope.preProcess();
+        show(oneSlope.recommendToUser(Lucy));
 
     }
 }
