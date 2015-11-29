@@ -142,4 +142,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="malr:16" author="suomiy">
+        <addColumn tableName="mal_anime">
+            <column name="description_similarity_vector" type="varchar(300000)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -49,6 +49,11 @@ public class AnimeRepository {
         return convert(dbAnimeRepository.findAll());
     }
 
+    public List<Anime> findAllWithDeleted() {
+        return convert(dbAnimeRepository.findAllWithDeleted());
+    }
+
+
     public List<Anime> batchCreate(List<Anime> entities) throws Exception {
         updateGenres(entities);
         updateDifferenceVector(entities);
@@ -93,5 +98,13 @@ public class AnimeRepository {
 
     private void updateDifferenceVector(Anime entity) {
         entity.getDbAnime().setDifferenceVectorAsString(entity.getDifferenceVector());
+    }
+
+    private void updateDescriptionSimilarityVector(List<Anime> entities) {
+        entities.forEach(this::updateDescriptionSimilarityVector);
+    }
+
+    private void updateDescriptionSimilarityVector(Anime entity) {
+        entity.getDbAnime().setDescriptionSimilarityVectorAsString(entity.getDescriptionSimilarityVector());
     }
 }

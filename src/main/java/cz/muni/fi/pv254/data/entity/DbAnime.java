@@ -31,11 +31,13 @@ public class DbAnime extends IdEntity{
     private String genreEntries;
     @Column(name = "difference_vector")
     private String differenceVector;
-
+    @Column(name = "description_similarity_vector")
+    private String descriptionSimilarityVector;
     private Long episodes;
     private AnimeType type;
     private Long popularity;
     private Long ranked;
+    private String description;
 
     public DbAnime() {
         super();
@@ -56,6 +58,10 @@ public class DbAnime extends IdEntity{
 
     public void setDifferenceVector(String differenceVector) {
         this.differenceVector = Utils.removeEmptyStr(differenceVector);
+    }
+
+    public void setDescriptionSimilarityVector(String descriptionSimilarityVector) {
+        this.descriptionSimilarityVector = Utils.removeEmptyStr(descriptionSimilarityVector);
     }
 
     public void setImageLink(String imageLink) {
@@ -81,6 +87,14 @@ public class DbAnime extends IdEntity{
 
     public void setDifferenceVectorAsString(List<Pair<Integer, Double>> differenceVector) {
         setDifferenceVector(JsonParser.save(differenceVector));
+    }
+
+    public List<Double> getDescriptionSimilarityVectorAsList() {
+        return JsonParser.loadAsDescriptionSimilarityVector(descriptionSimilarityVector);
+    }
+
+    public void setDescriptionSimilarityVectorAsString(List<Double> descriptionSimilarityVector) {
+        setDescriptionSimilarityVector(JsonParser.save(descriptionSimilarityVector));
     }
 
     @Override

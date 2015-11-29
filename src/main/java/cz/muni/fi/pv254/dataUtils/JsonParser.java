@@ -27,15 +27,21 @@ public class JsonParser {
         return (entries == null || "".equals(entries)) ?  new ArrayList<>() : gson.fromJson(entries, listType);
     }
 
-    public static List<Pair<Integer, Double>> loadAsDifferenceVector(String entries){
+    public static List<Pair<Integer, Double>> loadAsDifferenceVector(String parseString){
         Gson gson = new Gson();
         Type listType = new TypeToken<ArrayList<Pair<Integer, Double>>>() {}.getType();
-        return (entries == null || "".equals(entries)) ?  new ArrayList<>() : gson.fromJson(entries, listType);
+        return (parseString == null || "".equals(parseString)) ?  new ArrayList<>() : gson.fromJson(parseString, listType);
     }
 
     public static List<Genre> loadAsGenre(String entries){
         Gson gson = new Gson();
         Type listType = new TypeToken<ArrayList<Genre>>() {}.getType();
         return (entries == null || "".equals(entries)) ?  new ArrayList<>() : gson.fromJson(entries, listType);
+    }
+
+    public static List<Double> loadAsDescriptionSimilarityVector(String parseString) {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<ArrayList<Double>>() {}.getType();
+        return (parseString == null || "".equals(parseString)) ?  new ArrayList<>() : gson.fromJson(parseString, listType);
     }
 }

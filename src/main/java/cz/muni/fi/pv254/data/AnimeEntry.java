@@ -5,6 +5,8 @@ import cz.muni.fi.pv254.data.enums.AnimeEntryStatus;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Comparator;
+
 /**
  * Created by suomiy on 11/21/15.
  */

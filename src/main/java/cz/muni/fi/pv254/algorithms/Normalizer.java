@@ -35,7 +35,7 @@ public class Normalizer {
         }
     }
 
-    private Double calculateAverage(List<AnimeEntry> list){
+    public static Double calculateAverage(List<AnimeEntry> list){
         String badArg = "Bad Argument \"list\"";
         if(list == null || list.size() == 0){
             throw new IllegalArgumentException(badArg);

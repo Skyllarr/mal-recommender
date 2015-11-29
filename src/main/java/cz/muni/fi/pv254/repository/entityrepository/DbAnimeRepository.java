@@ -5,6 +5,7 @@ package cz.muni.fi.pv254.repository.entityrepository;
  */
 
 import com.mysema.query.jpa.impl.JPAQuery;
+import cz.muni.fi.pv254.data.Anime;
 import cz.muni.fi.pv254.data.entity.DbAnime;
 import cz.muni.fi.pv254.data.entity.QDbAnime;
 import cz.muni.fi.pv254.init.Setup;
@@ -34,6 +35,13 @@ public class DbAnimeRepository extends Repository<DbAnime> {
     public List<DbAnime> findAll() {
         QDbAnime dbAnime = QDbAnime.dbAnime;
         JPAQuery query = new JPAQuery(em).from(dbAnime).where(dbAnime.deleted.isFalse());
+
+        return maxResultCount == null ?  query.list(dbAnime) : query.limit(maxResultCount).list(dbAnime);
+    }
+
+    public List<DbAnime> findAllWithDeleted() {
+        QDbAnime dbAnime = QDbAnime.dbAnime;
+        JPAQuery query = new JPAQuery(em).from(dbAnime);
 
         return maxResultCount == null ?  query.list(dbAnime) : query.limit(maxResultCount).list(dbAnime);
     }
