@@ -124,7 +124,10 @@ public class TestOneSlope {
         //List<Double> oneSlopeValues = new ArrayList<>();
         OneSlope oneSlope = new OneSlope(dataStore, true);
         oneSlope.preProcess();
-        show(oneSlope.recommendToUser(Lucy));
+        show(oneSlope.recommendToUser(Lucy, null, null));
+        show(oneSlope.recommendToUser(Lucy, 3, null));
+        show(oneSlope.recommendToUser(Lucy, null, 2));
+        show(oneSlope.recommendToUser(Lucy, 2, 2));
 
     }
 }

@@ -12,6 +12,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static cz.muni.fi.pv254.utils.Utils.show;
+
 /**
  * Created by skylar on 23.11.15.
  */
@@ -27,7 +29,8 @@ public class DataStore {
     private List<User> users;
     private List<Anime> animes;
     private List<AnimeEntry>  animeEntries;
-    private Map<Long,Anime>  animeMalIdMap;
+    private Map<Long, Anime>  animeMalIdMap;
+    private Map<Long, Integer>  animeViewCountMap;
 
     public List<Anime> findAllAnimes() {
         return animes;
@@ -45,14 +48,14 @@ public class DataStore {
         animes = animeRepository.findAll();
         animes.sort((a,b) -> a.getMalId().compareTo(b.getMalId()));
         users = userRepository.findAll();
-        prepareAnimeMalIdMap();
+        prepareAnimeMaps();
     }
 
     public void partialFetchData(){
         animes = animeRepository.findAll();
         animes.sort((a,b) -> a.getMalId().compareTo(b.getMalId()));
         users = userRepository.findAll();
-        prepareAnimeMalIdMap();
+        prepareAnimeMaps();
 
         users.forEach(u -> {
             List<AnimeEntry> entries = u.getAnimeEntries();
@@ -139,6 +142,10 @@ public class DataStore {
         return animeEntries.stream().filter(predicate).collect(Collectors.toList());
     }
 
+    public Integer findAnimeViewCount(Long malId){
+        return animeViewCountMap.get(malId);
+    }
+
     private List<AnimeEntry> filterUnscoredEntries(List<AnimeEntry> entries){
         return entries.stream().filter(a -> a.getScore() > 0).collect(Collectors.toList());
     }
@@ -152,16 +159,30 @@ public class DataStore {
         this.users = users;
         this.animes = animes;
         animes.sort((a,b) -> a.getMalId().compareTo(b.getMalId()));
-        prepareAnimeMalIdMap();
+        prepareAnimeMaps();
     }
 
     public void setAnimes(List<Anime> animes) {
         this.animes = animes;
     }
 
-    private void prepareAnimeMalIdMap() {
+    private void prepareAnimeMaps() {
         animeEntries = new ArrayList<>();
         users.forEach(u -> animeEntries.addAll(u.getAnimeEntries()));
         animeMalIdMap = animes.stream().collect(Collectors.toMap(Anime::getMalId, a -> a, (a,b) -> a,TreeMap::new));
+
+        animeViewCountMap = new HashMap<>();
+
+        animeEntries.forEach(a -> {
+            Long animeId = a.getMalId();
+            Integer count = 1;
+
+            if(animeViewCountMap.containsKey(animeId)){
+                count += animeViewCountMap.get(animeId);
+            }
+
+            animeViewCountMap.put(animeId, count);
+        });
+
     }
 }

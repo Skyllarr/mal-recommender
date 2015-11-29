@@ -26,7 +26,7 @@ public class OneSlope {
         this.debug = debug;
     }
 
-    public Map<Anime, Double> recommendToUser(User user) {
+    public Map<Anime, Double> recommendToUser(User user, Integer minUsers, Integer maxUsers) {
         List<AnimeEntry> entries = user.getAnimeEntries();
         Map<Long, Integer>  mapOfIds = new HashMap<>();
         List<Anime> animeList = dataStore.findAllAnimes();
@@ -55,7 +55,24 @@ public class OneSlope {
             denominator = 0;
         }
 
-        return recommValues.stream().collect(Collectors.toMap( p -> dataStore.findAnimeByMalId(p.getFirst()), Pair::getSecond));
+        return recommValues.stream()
+                .filter( p -> {
+                    Integer viewCount = dataStore.findAnimeViewCount(p.getFirst());
+                    boolean result = true;
+
+                    if(viewCount == null){
+                        result = false;
+                    }else if(minUsers != null && maxUsers != null){
+                        result = viewCount  >= minUsers  && viewCount  <= maxUsers;
+                    }else if(minUsers != null){
+                        result = viewCount  >= minUsers;
+                    }else if(maxUsers != null){
+                        result =  viewCount  <= maxUsers;
+                    }
+
+                    return result;
+                })
+                .collect(Collectors.toMap( p -> dataStore.findAnimeByMalId(p.getFirst()), Pair::getSecond));
     }
 
     public void preProcess() {
