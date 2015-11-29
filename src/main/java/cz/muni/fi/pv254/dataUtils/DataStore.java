@@ -30,7 +30,6 @@ public class DataStore {
     private List<Anime> animes;
     private List<Anime> animesForTextAnalysis;
     private List<AnimeEntry>  animeEntries;
-    private Map<Long,Anime>  animeForTextAnalysisMalIdMap;
     private Map<Long, Anime>  animeMalIdMap;
     private Map<Long, Integer>  animeViewCountMap;
 
@@ -51,10 +50,11 @@ public class DataStore {
     }
 
     public void fetchData(){
-        animes = animeRepository.findAll();
+        animesForTextAnalysis = animeRepository.findAllWithDeleted(); //animes = animeRepository.findAll();
+        animesForTextAnalysis.sort((a,b) -> a.getMalId().compareTo(b.getMalId()));
+        animes = animesForTextAnalysis.stream().filter(a -> !a.isDeleted()).collect(Collectors.toList());
         animes.sort((a,b) -> a.getMalId().compareTo(b.getMalId()));
         users = userRepository.findAll();
-        animesForTextAnalysis = animeRepository.findAllWithDeleted();
         prepareAnimeMaps();
     }
 
@@ -68,7 +68,7 @@ public class DataStore {
             List<AnimeEntry> entries = u.getAnimeEntries();
             for (Iterator<AnimeEntry> iterator = entries.iterator(); iterator.hasNext(); ) {
                 AnimeEntry entry = iterator.next();
-                if (entry.getScore() == null || entry.getScore() == 0 || !animeMalIdMap.containsKey(entry.getMalId())) {
+                if (entry.getScore() == 0 || !animeMalIdMap.containsKey(entry.getMalId())) {
                     iterator.remove();
                 }
             }
@@ -95,10 +95,6 @@ public class DataStore {
 
     public Anime findAnimeByMalId(Long malId) {
         return animeMalIdMap.get(malId);
-    }
-
-    public Anime findAnimeForTextAnalysisByMalId(Long malId) {
-        return animeForTextAnalysisMalIdMap.get(malId);
     }
 
     public User findUserByMalId(Long malId) {
@@ -180,8 +176,7 @@ public class DataStore {
     private void prepareAnimeMaps() {
         animeEntries = new ArrayList<>();
         users.forEach(u -> animeEntries.addAll(u.getAnimeEntries()));
-        animeMalIdMap = animes.stream().collect(Collectors.toMap(Anime::getMalId, a -> a, (a,b) -> a,TreeMap::new));
-        animeForTextAnalysisMalIdMap = animes.stream().collect(Collectors.toMap(Anime::getMalId, a -> a, (a,b) -> a,TreeMap::new));
+        animeMalIdMap = animes.stream().collect(Collectors.toMap(Anime::getMalId, a -> a, (a,b) -> a,TreeMap::new)); //animes
         animeViewCountMap = new HashMap<>();
 
         animeEntries.forEach(a -> {

@@ -15,11 +15,11 @@ import java.util.Comparator;
 public class AnimeEntry implements MAL{
 
     @SerializedName("m")
-    private Long malId;
+    private long malId;
     @SerializedName("s")
-    private Long score;
+    private long score;
     @SerializedName("n")
-    private Double normalizedScore;
+    private double normalizedScore;
     @SerializedName("t")
     private AnimeEntryStatus status;
 
@@ -34,18 +34,28 @@ public class AnimeEntry implements MAL{
     }
 
     @Override
+    public void setMalId(Long malId){
+        this.malId = malId;
+    }
+
+    @Override
+    public Long getMalId(){
+        return malId;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof AnimeEntry || o instanceof Anime)) return false;
 
         MAL entity = (MAL) o;
 
-        return malId != null && entity.getMalId() != null && malId.equals(entity.getMalId());
+        return entity.getMalId() != null && malId == entity.getMalId();
     }
 
     @Override
     public int hashCode() {
-        return (malId != null) ? malId.intValue() : 0;
+        return (int) malId;
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.mysema.query.types.path.EntityPathBase;
 import cz.muni.fi.pv254.data.User;
 import cz.muni.fi.pv254.data.entity.IdEntity;
 import cz.muni.fi.pv254.dataUtils.DataStore;
+import cz.muni.fi.pv254.init.Setup;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -22,6 +23,9 @@ public abstract class Repository<E extends IdEntity> {
     @Inject
     DataStore dataStore;
     private final Long maxResultCount;
+
+    private static final boolean forbidEntitiesUpdates = Setup.forbidEntitiesUpdates;
+
 
     public Repository() {
         maxResultCount = null;
@@ -50,6 +54,10 @@ public abstract class Repository<E extends IdEntity> {
     }
 
     public E update(final E entity) {
+        if(forbidEntitiesUpdates){
+            throw new UnsupportedOperationException("Cannot update entity when forbidEntitiesUpdates == true ");
+        }
+
         return em.merge(entity);
     }
 
@@ -76,6 +84,10 @@ public abstract class Repository<E extends IdEntity> {
     }
 
     public List<E> batchUpdate(List<E> entities) {
+        if(forbidEntitiesUpdates){
+            throw new UnsupportedOperationException("Cannot update entities when forbidEntitiesUpdates == true ");
+        }
+
         try {
             return batchUpdate(entities, false);
         } catch (Exception e) {

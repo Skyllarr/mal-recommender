@@ -41,11 +41,11 @@ public class DataFilterer {
             List<AnimeEntry> entries = u.getAnimeEntries();
             for (Iterator<AnimeEntry> iterator = entries.iterator(); iterator.hasNext();) {
                 AnimeEntry entry = iterator.next();
-                if(entry.getScore() == null || entry.getScore() == 0 || !filteredAnimeMap.containsKey(entry)){
+                if (entry.getScore() == 0 || !filteredAnimeMap.containsKey(entry)){
                     iterator.remove();
                 }
             }
-            if(entries.size() == 0){
+            if (entries.size() == 0){
                 u.setDeleted(true);
             }
         });

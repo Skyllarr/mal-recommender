@@ -2,6 +2,7 @@ package cz.muni.fi.pv254.data;
 
 import cz.muni.fi.pv254.data.entity.DbUser;
 import cz.muni.fi.pv254.data.enums.Gender;
+import cz.muni.fi.pv254.init.Setup;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,6 +24,11 @@ public class User implements MAL {
     public User(DbUser dbUser) {
         this.dbUser = dbUser;
         this.animeEntries = dbUser.getAnimeEntriesAsList();
+
+        // takes less memory, but entity cannot be updated after this
+        if(Setup.forbidEntitiesUpdates){
+            dbUser.setAnimeEntries(null);
+        }
     }
 
     public User(String name, Long malId, LocalDate birthday) {

@@ -4,6 +4,7 @@ import com.mysema.commons.lang.Pair;
 import cz.muni.fi.pv254.data.entity.DbAnime;
 import cz.muni.fi.pv254.data.enums.AnimeType;
 import cz.muni.fi.pv254.data.enums.Genre;
+import cz.muni.fi.pv254.init.Setup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,13 @@ public class Anime implements MAL {
         this.genres = dbAnime.getGenreEntriesAsList();
         differenceVector = dbAnime.getDifferenceVectorAsList();
         descriptionSimilarityVector = dbAnime.getDescriptionSimilarityVectorAsList();
+
+        // takes less memory, but entity cannot be updated after this
+        if(Setup.forbidEntitiesUpdates){
+            dbAnime.setDifferenceVector(null);
+            dbAnime.setDescriptionSimilarityVector(null);
+            dbAnime.setGenreEntries(null);
+        }
     }
 
     public Anime(String title, String imageLink, Long malId, Long episodes, AnimeType type) {

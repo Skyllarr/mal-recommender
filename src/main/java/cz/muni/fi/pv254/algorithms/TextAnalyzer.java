@@ -47,7 +47,7 @@ public class TextAnalyzer {
                 .collect(Collectors.toList());
 
         for (AnimeEntry animeEntry : favoriteAnimes) {
-            Anime anime = dataStore.findAnimeForTextAnalysisByMalId(animeEntry.getMalId());
+            Anime anime = dataStore.findAnimeByMalId(animeEntry.getMalId());
             List<Double> similarityVector = anime.getDescriptionSimilarityVector();
 
             for(int i = 0; i < similarityVector.size(); i++) {
