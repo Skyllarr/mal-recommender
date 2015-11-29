@@ -31,7 +31,7 @@ class AppInitializer implements ServletContextListener {
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         // init
-       /* dataStore.fetchData();*/
+       dataStore.fetchData();
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {

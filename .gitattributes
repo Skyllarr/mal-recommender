@@ -1,0 +1,3 @@
+src/main/webapp/webapp-target/* linguist-vendored
+src/main/webapp/css/bootstrap.less linguist-vendored
+src/main/webapp/css/react-widgets.less linguist-vendored

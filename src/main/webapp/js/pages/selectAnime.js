@@ -15,11 +15,32 @@ module.exports = React.createClass({
         router: React.PropTypes.func
     },
 
-    render: function () {
+    onClick: function() {
+        $.ajax({
+            url: "/api/anime/loadall",
+            type: 'GET',
+            dataType: 'json'
+        }).done(function (data) {
+            console.log(data);
+        }.bind(this)).fail(function (data) {
+            console.log("fail");
+        }.bind(this));
+    },
 
+    render: function () {
         return (
             <div>
                 <Header/>
+                <div className="row">
+                    <div className="col-md-2"></div>
+                    <div className="col-md-10">
+                        <br/>
+                        <br/>
+                        <button className="btn btn-default flow" type="button" onClick={this.onClick}>
+                            Get Animes
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     }

@@ -1,10 +1,8 @@
 module.exports = function (grunt) {
     var src = 'src/main/webapp/js/',
-        dest = 'target/MyAnimeListRecommender/js/';
+        destProd = 'src/main/webapp/webapp-target/',
+        dest = 'target/MyAnimeListRecommender/webapp-target/';
 
-    var configs = {
-        watch_files: ['src/main/webapp/less/**']
-    };
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -27,27 +25,25 @@ module.exports = function (grunt) {
             },
             prod: {
                 src: src + 'app.js',
-                dest: src + 'appRendered.js'
+                dest: destProd + 'appRendered.js'
             }
         },
         less: {
-            production: {
+            development: {
                 files: {
-                    "target/MyAnimeListRecommender/css/combined.css": "src/main/webapp/less/main.less"
+                    "target/MyAnimeListRecommender/webapp-target/combined.css": "src/main/webapp/css/main.less"
                 }
-            }
-        },
-        watch: {
-            src: {
-                files: configs.watch_files,
-                tasks: ['less']
+            },
+            prod: {
+                files: {
+                    "src/main/webapp/webapp-target/combined.css": "src/main/webapp/css/main.less"
+                }
             }
         }
     });
 
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.registerTask('watchify', ['browserify:development']);
 };
