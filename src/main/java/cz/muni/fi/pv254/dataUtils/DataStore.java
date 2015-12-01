@@ -94,7 +94,7 @@ public class DataStore {
     }
 
     public Anime findAnimeByMalId(Long malId) {
-        return animeMalIdMap.get(malId);
+        return malId == null ? null : animeMalIdMap.get(malId);
     }
 
     public User findUserByMalId(Long malId) {

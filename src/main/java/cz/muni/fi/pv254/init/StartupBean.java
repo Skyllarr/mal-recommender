@@ -1,6 +1,9 @@
 package cz.muni.fi.pv254.init;
 
+import cz.muni.fi.pv254.algorithms.TextAnalyzer;
 import cz.muni.fi.pv254.dataUtils.DataStore;
+import cz.muni.fi.pv254.utils.StatisticsUtils;
+import cz.muni.fi.pv254.utils.Utils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -21,8 +24,8 @@ public class StartupBean {
 
     @PostConstruct
     public void initialize() {
-         new Thread(() -> {
+        /* new Thread(() -> {
              dataStore.fetchData();
-         }).start();
+         }).start();*/
     }
 }

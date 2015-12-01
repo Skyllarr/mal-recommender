@@ -31,10 +31,7 @@ import static cz.muni.fi.pv254.utils.Utils.show;
 @WebListener
 class AppInitializer implements ServletContextListener {
 
-    @Inject
-    StatisticsUtils stats;
 
-    // fetches data to datastore
     @Inject
     StartupBean startupBean;
 
@@ -42,19 +39,7 @@ class AppInitializer implements ServletContextListener {
     DataStore dataStore;
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        // init
-
-        /*TextAnalyzer textAnalyzer = new TextAnalyzer(dataStore);
-        textAnalyzer.preProcess(true);
-        dataStore.flush();
-        User user = new User();
-        List<AnimeEntry> listAnimeEntries = new ArrayList<>();
-        listAnimeEntries.add(new AnimeEntry(269l, 8l, AnimeEntryStatus.COMPLETED));
-        user.setAnimeEntries(listAnimeEntries);
-        Utils.showSortedDouble(textAnalyzer.recommendToUser(user, dataStore));*/
-
-        //show(new OneSlope(dataStore, false).recommendToUser(dataStore.findUserByName("lanblade"),10, null));
-
+        dataStore.fetchData();
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
