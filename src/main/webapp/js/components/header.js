@@ -1,4 +1,3 @@
-var $ = require('jquery');
 var React = require('react');
 var Reactbootstrap = require('react-bootstrap');
 var Panel = Reactbootstrap.Panel;
@@ -7,7 +6,6 @@ var Nav = Reactbootstrap.Nav;
 var NavItem = Reactbootstrap.NavItem;
 var Col = Reactbootstrap.Col;
 var Row = Reactbootstrap.Row;
-var NavDropdown = Reactbootstrap.NavDropdown;
 
 
 

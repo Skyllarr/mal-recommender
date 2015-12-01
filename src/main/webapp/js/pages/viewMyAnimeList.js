@@ -6,7 +6,7 @@ var Col = Reactbootstrap.Col;
 var AnimeStore = require('../animeStore');
 var Header = require('../components/header');
 var AnimeDetail = require('../components/animeDetail');
-var MyAnimeList = require('../components/myAnimeList');
+var MyAnimeList = require('../lists/myAnimeList');
 
 module.exports = React.createClass({
 

@@ -3,23 +3,14 @@ var Reactbootstrap = require('react-bootstrap');
 var Row = Reactbootstrap.Row;
 var Col = Reactbootstrap.Col;
 
-var Common = require('../common');
 var Header = require('../components/header');
 var AnimeDetail = require('../components/animeDetail');
-var AnimeList = require('../components/animeList');
+var AnimeList = require('../lists/animeList');
 
 module.exports = React.createClass({
 
-    contextTypes: {
-        router: React.PropTypes.func
-    },
-
-
-    mixins: [Common],
-
     getInitialState: function () {
         return {
-            animes: [],
             showAnimeDetail: null
         }
     },
@@ -31,7 +22,6 @@ module.exports = React.createClass({
     animeClicked: function(malId) {
         this.setState({showAnimeDetail: malId});
     },
-
     render: function () {
 
         return (
