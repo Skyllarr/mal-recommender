@@ -176,7 +176,7 @@ public class DataStore {
     private void prepareAnimeMaps() {
         animeEntries = new ArrayList<>();
         users.forEach(u -> animeEntries.addAll(u.getAnimeEntries()));
-        animeMalIdMap = animes.stream().collect(Collectors.toMap(Anime::getMalId, a -> a, (a,b) -> a,TreeMap::new)); //animes
+        animeMalIdMap = animesForTextAnalysis.stream().collect(Collectors.toMap(Anime::getMalId, a -> a, (a,b) -> a,TreeMap::new)); //animes
         animeViewCountMap = new HashMap<>();
 
         animeEntries.forEach(a -> {

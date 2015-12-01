@@ -35,11 +35,12 @@ class AppInitializer implements ServletContextListener {
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         // init
-       /* dataStore.fetchData();
-        TextAnalyzer textAnalyzer = new TextAnalyzer(dataStore);
-        textAnalyzer.preprocess(true);
-        User user = new User();
+        dataStore.fetchData();
+
+        /*TextAnalyzer textAnalyzer = new TextAnalyzer(dataStore);
+        textAnalyzer.preProcess(true);
         dataStore.flush();
+        User user = new User();
         List<AnimeEntry> listAnimeEntries = new ArrayList<>();
         listAnimeEntries.add(new AnimeEntry(269l, 8l, AnimeEntryStatus.COMPLETED));
         user.setAnimeEntries(listAnimeEntries);

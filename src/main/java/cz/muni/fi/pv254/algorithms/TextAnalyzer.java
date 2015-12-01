@@ -24,7 +24,7 @@ public class TextAnalyzer {
         allAnimes = dataStore.findAnimesForTextAnalysis();
     }
 
-    public void preprocess(boolean debug) {
+    public void preProcess(boolean debug) {
         corpus = allAnimes.stream().collect(Collectors.toMap(anime -> anime, this::computeTermFrequency));
         int debugCount = 0;
         for (Anime anime : allAnimes) {
@@ -141,16 +141,5 @@ public class TextAnalyzer {
             documentCorpus.replaceAll((k, v) -> v / finalMaxFreq);
         }
         return documentCorpus;
-    }
-
-
-    public class animeEntryScoreComparator implements Comparator<AnimeEntry>
-    {
-        public int compare(AnimeEntry a1, AnimeEntry a2)
-        {
-            if (a1.getNormalizedScore() < a2.getNormalizedScore()) return -1;
-            if (a1.getNormalizedScore() > a2.getNormalizedScore()) return 1;
-            return 0;
-        }
     }
 }

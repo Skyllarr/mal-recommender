@@ -1,12 +1,17 @@
 var $ = require('jquery');
 var React = require('react');
 var Reactbootstrap = require('react-bootstrap');
-var Navbar = Reactbootstrap.Navbar;
+var Panel = Reactbootstrap.Panel;
+
 var Nav = Reactbootstrap.Nav;
 var NavItem = Reactbootstrap.NavItem;
-var MenuItem = Reactbootstrap.MenuItem;
-var DropdownButton = Reactbootstrap.DropdownButton;
+var Col = Reactbootstrap.Col;
+var Row = Reactbootstrap.Row;
+var NavDropdown = Reactbootstrap.NavDropdown;
 
+
+
+var Common = require('../common');
 
 module.exports = React.createClass({
 
@@ -14,23 +19,28 @@ module.exports = React.createClass({
         router: React.PropTypes.func
     },
 
+    mixins: [Common],
+
+    onClick: function(route) {
+        this.transitionTo(route);
+    },
+
     render: function () {
         return (
-            <div>
-                <Navbar>
-                    <div className="navbar-header large">
-                        <div className="navbar-brand">
-                            <a  href="#">Mal Recommender</a>
-                        </div>
-                    </div>
-                    <Nav>
-                        <NavItem href="#">Link</NavItem>
-                        <NavItem href="#">Link</NavItem>
-                        <NavItem>
-                        </NavItem>
-                    </Nav>
-                </Navbar>
-            </div>
+            <Row>
+                <Col className="col-md-2"/>
+                <Col className="col-md-8">
+                    <Panel>
+                        <h2 >MAL Recommender</h2>
+                        <Nav bsStyle="pills" >
+                            <NavItem  onClick={function (){this.onClick('selectAnime')}.bind(this)}>Select Animes</NavItem>
+                            <NavItem  onClick={function (){this.onClick('viewAllAnimes')}.bind(this)}>All Animes</NavItem>
+                            <NavItem  onClick={function (){this.onClick('viewMyAnimeList')}.bind(this)}>My List</NavItem>
+                        </Nav>
+                    </Panel>
+                </Col>
+                <Col className="col-md-2"/>
+            </Row>
         );
     }
 });

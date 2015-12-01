@@ -7144,3 +7144,16 @@ ul.rw-list.rw-list-grouped > li.rw-list-option,
 .rw-rtl .rw-multiselect-taglist > li {
   float: right;
 }
+.pointer {
+  cursor: pointer;
+}
+.container {
+  float: left;
+  overflow: hidden;
+}
+.container img {
+  display: block;
+}
+.portrait img {
+  width: 100%;
+}

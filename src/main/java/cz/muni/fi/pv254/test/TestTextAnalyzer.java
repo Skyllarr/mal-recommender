@@ -46,7 +46,7 @@ public class TestTextAnalyzer {
                 //dataStore.setData(new ArrayList<>(), anime);
                 dataStore.fetchData();
                 TextAnalyzer textAnalyzer = new TextAnalyzer(dataStore);
-                textAnalyzer.preprocess(true);
+                textAnalyzer.preProcess(true);
                 User user = new User();
                 List<AnimeEntry> listAnimeEntries = new ArrayList<>();
                 listAnimeEntries.add(new AnimeEntry(269l, 8l, AnimeEntryStatus.COMPLETED));//Long malId, Long score, AnimeEntryStatus status
