@@ -11,16 +11,18 @@ module.exports = React.createClass({
 
     getInitialState: function () {
         return {
-            showAnimeDetail: null
+            showAnimeDetail: null,
+            updateEntropy: true
         }
     },
 
     closeAnimeDetail: function() {
-        this.setState({showAnimeDetail: null})
+        this.setState({showAnimeDetail: null, updateEntropy: (!this.state.updateEntropy)});
     },
 
+
     animeClicked: function(malId) {
-        this.setState({showAnimeDetail: malId});
+        this.setState({showAnimeDetail: malId, updateEntropy: (!this.state.updateEntropy)});
     },
     render: function () {
 
@@ -30,7 +32,7 @@ module.exports = React.createClass({
                 <Row>
                     <Col className="col-md-2"/>
                     <Col className="col-md-8">
-                        <AnimeList onItemClicked={this.animeClicked}/>
+                        <AnimeList updateEntropy={this.state.updateEntropy} onItemClicked={this.animeClicked}/>
                     </Col>
                     <Col className="col-md-2"/>
                 </Row>

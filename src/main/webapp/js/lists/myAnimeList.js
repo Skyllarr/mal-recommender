@@ -7,7 +7,6 @@ module.exports = React.createClass({
 
     render: function () {
         return (
-
             <ListGroup className="list-unstyled">
                 {
                     this.props.animes.map(function (anime, index) {
@@ -19,7 +18,6 @@ module.exports = React.createClass({
                     }.bind(this))
                 }
             </ListGroup>
-
         );
     }
 });

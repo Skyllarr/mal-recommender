@@ -12,13 +12,13 @@ module.exports = React.createClass({
         router: React.PropTypes.func
     },
 
-
     mixins: [Common],
 
     getInitialState: function () {
         return {
             animes: [],
-            oneSlopeOnly: false
+            oneSlopeOnly: false,
+            updateEntropy: true
         }
     },
 
@@ -33,7 +33,7 @@ module.exports = React.createClass({
     },
 
     handleSearchChange() {
-        var value = this.refs.input.getValue()
+        var value = this.refs.input.getValue().escapeRegExp();
 
         this.state.animes.forEach(function (anime) {
             anime.doNotShow = (value != null && value != '' &&  !(new RegExp(value)).test(anime.title)) ? true : null;
@@ -43,7 +43,7 @@ module.exports = React.createClass({
     },
 
     handleSearchOneSlope(event) {
-        var value = event.target.checked
+        var value = event.target.checked;
 
         if(value != this.state.oneSlopeOnly){
             this.setState({oneSlopeOnly: value});
@@ -53,6 +53,18 @@ module.exports = React.createClass({
         }
 
         this.setState({animes: this.state.animes});
+    },
+
+    //to not rerender after clicking on an item
+    componentWillReceiveProps: function(nextProps) {
+        this.setState({
+            updateEntropy: nextProps.updateEntropy
+        });
+
+    },
+
+    shouldComponentUpdate: function(nextProps) {
+        return this.state.updateEntropy == nextProps.updateEntropy;
     },
 
     render: function () {

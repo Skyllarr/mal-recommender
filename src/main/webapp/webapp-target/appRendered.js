@@ -47194,6 +47194,10 @@ String.prototype.capitalizeFirstLetter = function () {
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
+String.prototype.escapeRegExp = function () {
+    return this.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+};
+
 module.exports = {
 
     transitionTo: function transitionTo(route, params, activeTab) {
@@ -47407,69 +47411,12 @@ module.exports = React.createClass({
 
 var React = require('react');
 var Reactbootstrap = require('react-bootstrap');
-
-var Common = require('../common');
-
-module.exports = React.createClass({
-    displayName: 'exports',
-
-    contextTypes: {
-        router: React.PropTypes.func
-    },
-
-    mixins: [Common],
-
-    getInitialState: function getInitialState() {
-        return {
-            animes: []
-        };
-    },
-
-    componentDidMount: function componentDidMount() {
-        if (this.state.animes.length == 0) {
-            this.loadData('anime/loadalltitles', function (data) {
-
-                data.animes.sort(function (a, b) {
-                    return a.title.localeCompare(b.title);
-                });
-            });
-        }
-    },
-
-    render: function render() {
-        return React.createElement(
-            'ul',
-            { className: 'list-unstyled' },
-            this.state.animes.map((function (anime, index) {
-                return React.createElement(
-                    'li',
-                    { key: index },
-                    React.createElement(
-                        'a',
-                        { className: 'pointer', onClick: (function () {
-                                this.props.onItemClicked(anime.malId);
-                            }).bind(this) },
-                        anime.title
-                    )
-                );
-            }).bind(this))
-        );
-    }
-});
-
-},{"../common":438,"react":432,"react-bootstrap":204}],441:[function(require,module,exports){
-'use strict';
-
-var $ = require('jquery');
-var React = require('react');
-var Reactbootstrap = require('react-bootstrap');
 var Panel = Reactbootstrap.Panel;
 
 var Nav = Reactbootstrap.Nav;
 var NavItem = Reactbootstrap.NavItem;
 var Col = Reactbootstrap.Col;
 var Row = Reactbootstrap.Row;
-var NavDropdown = Reactbootstrap.NavDropdown;
 
 var Common = require('../common');
 
@@ -47534,21 +47481,127 @@ module.exports = React.createClass({
     }
 });
 
-},{"../common":438,"jquery":62,"react":432,"react-bootstrap":204}],442:[function(require,module,exports){
+},{"../common":438,"react":432,"react-bootstrap":204}],441:[function(require,module,exports){
 'use strict';
 
-var $ = require('jquery');
+var React = require('react');
+var Reactbootstrap = require('react-bootstrap');
+var Input = Reactbootstrap.Input;
+var Button = Reactbootstrap.Button;
+
+var Common = require('../common');
+
+module.exports = React.createClass({
+    displayName: 'exports',
+
+    contextTypes: {
+        router: React.PropTypes.func
+    },
+
+    mixins: [Common],
+
+    getInitialState: function getInitialState() {
+        return {
+            animes: [],
+            oneSlopeOnly: false,
+            updateEntropy: true
+        };
+    },
+
+    componentDidMount: function componentDidMount() {
+        if (this.state.animes.length == 0) {
+            this.loadData('anime/loadalltitles', function (data) {
+
+                data.animes.sort(function (a, b) {
+                    return a.title.localeCompare(b.title);
+                });
+            });
+        }
+    },
+
+    handleSearchChange: function handleSearchChange() {
+        var value = this.refs.input.getValue().escapeRegExp();
+
+        this.state.animes.forEach(function (anime) {
+            anime.doNotShow = value != null && value != '' && !new RegExp(value).test(anime.title) ? true : null;
+        });
+
+        this.setState({ animes: this.state.animes });
+    },
+
+    handleSearchOneSlope: function handleSearchOneSlope(event) {
+        var value = event.target.checked;
+
+        if (value != this.state.oneSlopeOnly) {
+            this.setState({ oneSlopeOnly: value });
+            this.state.animes.forEach(function (anime) {
+                anime.doNotShowOneSlope = value != null && value && anime.deleted ? true : null;
+            });
+        }
+
+        this.setState({ animes: this.state.animes });
+    },
+
+    //to not rerender after clicking on an item
+    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+        this.setState({
+            updateEntropy: nextProps.updateEntropy
+        });
+    },
+
+    shouldComponentUpdate: function shouldComponentUpdate(nextProps) {
+        return this.state.updateEntropy == nextProps.updateEntropy;
+    },
+
+    render: function render() {
+        return React.createElement(
+            'div',
+            null,
+            React.createElement(
+                'form',
+                null,
+                React.createElement(Input, {
+                    type: 'text',
+                    value: this.state.value,
+                    placeholder: 'Search',
+                    ref: 'input',
+                    onChange: this.handleSearchChange,
+                    buttonAfter: React.createElement(
+                        Button,
+                        { disabled: true },
+                        'One Slope only '
+                    ),
+                    addonAfter: React.createElement('input', { type: 'checkbox', onChange: this.handleSearchOneSlope })
+                })
+            ),
+            React.createElement(
+                'ul',
+                { className: 'list-unstyled' },
+                this.state.animes.map((function (anime, index) {
+                    return anime.doNotShow == null && anime.doNotShowOneSlope == null && React.createElement(
+                        'li',
+                        { key: index },
+                        React.createElement(
+                            'a',
+                            { className: 'pointer', onClick: (function () {
+                                    this.props.onItemClicked(anime.malId);
+                                }).bind(this) },
+                            anime.title
+                        )
+                    );
+                }).bind(this))
+            )
+        );
+    }
+});
+
+},{"../common":438,"react":432,"react-bootstrap":204}],442:[function(require,module,exports){
+'use strict';
+
 var React = require('react');
 var Reactbootstrap = require('react-bootstrap');
 var ListGroup = Reactbootstrap.ListGroup;
 var ListGroupItem = Reactbootstrap.ListGroupItem;
-var Panel = Reactbootstrap.Panel;
-var Row = Reactbootstrap.Row;
-var Col = Reactbootstrap.Col;
-
-var Common = require('../common');
-var Header = require('../components/header');
-var AnimeDetail = require('../components/animeDetail');
 
 module.exports = React.createClass({
     displayName: 'exports',
@@ -47574,7 +47627,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"../common":438,"../components/animeDetail":439,"../components/header":441,"jquery":62,"react":432,"react-bootstrap":204}],443:[function(require,module,exports){
+},{"react":432,"react-bootstrap":204}],443:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -47619,7 +47672,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"../common":438,"../components/header":441,"react":432,"react-bootstrap":204}],444:[function(require,module,exports){
+},{"../common":438,"../components/header":440,"react":432,"react-bootstrap":204}],444:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -47654,7 +47707,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"../common":438,"../components/header":441,"react":432,"react-bootstrap":204}],445:[function(require,module,exports){
+},{"../common":438,"../components/header":440,"react":432,"react-bootstrap":204}],445:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -47662,35 +47715,27 @@ var Reactbootstrap = require('react-bootstrap');
 var Row = Reactbootstrap.Row;
 var Col = Reactbootstrap.Col;
 
-var Common = require('../common');
 var Header = require('../components/header');
 var AnimeDetail = require('../components/animeDetail');
-var AnimeList = require('../components/animeList');
+var AnimeList = require('../lists/animeList');
 
 module.exports = React.createClass({
     displayName: 'exports',
 
-    contextTypes: {
-        router: React.PropTypes.func
-    },
-
-    mixins: [Common],
-
     getInitialState: function getInitialState() {
         return {
-            animes: [],
-            showAnimeDetail: null
+            showAnimeDetail: null,
+            updateEntropy: true
         };
     },
 
     closeAnimeDetail: function closeAnimeDetail() {
-        this.setState({ showAnimeDetail: null });
+        this.setState({ showAnimeDetail: null, updateEntropy: !this.state.updateEntropy });
     },
 
     animeClicked: function animeClicked(malId) {
-        this.setState({ showAnimeDetail: malId });
+        this.setState({ showAnimeDetail: malId, updateEntropy: !this.state.updateEntropy });
     },
-
     render: function render() {
 
         return React.createElement(
@@ -47704,7 +47749,7 @@ module.exports = React.createClass({
                 React.createElement(
                     Col,
                     { className: 'col-md-8' },
-                    React.createElement(AnimeList, { onItemClicked: this.animeClicked })
+                    React.createElement(AnimeList, { updateEntropy: this.state.updateEntropy, onItemClicked: this.animeClicked })
                 ),
                 React.createElement(Col, { className: 'col-md-2' })
             ),
@@ -47713,7 +47758,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"../common":438,"../components/animeDetail":439,"../components/animeList":440,"../components/header":441,"react":432,"react-bootstrap":204}],446:[function(require,module,exports){
+},{"../components/animeDetail":439,"../components/header":440,"../lists/animeList":441,"react":432,"react-bootstrap":204}],446:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -47724,7 +47769,7 @@ var Col = Reactbootstrap.Col;
 var AnimeStore = require('../animeStore');
 var Header = require('../components/header');
 var AnimeDetail = require('../components/animeDetail');
-var MyAnimeList = require('../components/myAnimeList');
+var MyAnimeList = require('../lists/myAnimeList');
 
 module.exports = React.createClass({
     displayName: 'exports',
@@ -47734,8 +47779,7 @@ module.exports = React.createClass({
     getInitialState: function getInitialState() {
         return {
             animes: [],
-            showAnimeDetail: null,
-            checkAnimeChanged: false
+            showAnimeDetail: null
         };
     },
 
@@ -47773,7 +47817,7 @@ module.exports = React.createClass({
                 React.createElement(
                     Col,
                     { className: 'col-md-8' },
-                    React.createElement(MyAnimeList, { onItemClicked: this.animeClicked, animes: this.state.animes, checkAnimeChanged: this.state.checkAnimeChanged })
+                    React.createElement(MyAnimeList, { onItemClicked: this.animeClicked, animes: this.state.animes })
                 ),
                 React.createElement(Col, { className: 'col-md-2' })
             ),
@@ -47782,4 +47826,4 @@ module.exports = React.createClass({
     }
 });
 
-},{"../animeStore":436,"../components/animeDetail":439,"../components/header":441,"../components/myAnimeList":442,"react":432,"react-bootstrap":204}]},{},[437]);
+},{"../animeStore":436,"../components/animeDetail":439,"../components/header":440,"../lists/myAnimeList":442,"react":432,"react-bootstrap":204}]},{},[437]);

@@ -15,8 +15,7 @@ module.exports = React.createClass({
     getInitialState: function () {
         return {
             animes: [],
-            showAnimeDetail: null,
-            checkAnimeChanged: false
+            showAnimeDetail: null
         }
     },
 
@@ -47,7 +46,7 @@ module.exports = React.createClass({
                 <Row>
                     <Col className="col-md-2"/>
                     <Col className="col-md-8">
-                        <MyAnimeList onItemClicked={this.animeClicked} animes={this.state.animes} checkAnimeChanged={this.state.checkAnimeChanged}/>
+                        <MyAnimeList onItemClicked={this.animeClicked} animes={this.state.animes} />
                     </Col>
                     <Col className="col-md-2"/>
                 </Row>

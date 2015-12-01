@@ -4,6 +4,10 @@ String.prototype.capitalizeFirstLetter = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
+String.prototype.escapeRegExp = function() {
+    return this.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+};
+
 module.exports = {
 
     transitionTo: function (route, params, activeTab) {
