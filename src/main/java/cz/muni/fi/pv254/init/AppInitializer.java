@@ -11,7 +11,11 @@ import cz.muni.fi.pv254.utils.MemoryUsage;
 import cz.muni.fi.pv254.utils.StatisticsUtils;
 import cz.muni.fi.pv254.utils.Utils;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.ejb.Startup;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -30,12 +34,15 @@ class AppInitializer implements ServletContextListener {
     @Inject
     StatisticsUtils stats;
 
+    // fetches data to datastore
+    @Inject
+    StartupBean startupBean;
+
     @Inject
     DataStore dataStore;
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         // init
-        dataStore.fetchData();
 
         /*TextAnalyzer textAnalyzer = new TextAnalyzer(dataStore);
         textAnalyzer.preProcess(true);
