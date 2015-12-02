@@ -28,7 +28,7 @@ public class DbAnimeRepository extends Repository<DbAnime> {
 
     @Inject
     public DbAnimeRepository(EntityManager em) {
-        super(em, maxResultCount, DbAnime.class, QDbAnime.dbAnime);
+        super(em, maxResultCount,Setup.forbidEntitiesUpdates, DbAnime.class, QDbAnime.dbAnime);
     }
 
     @Override

@@ -17,11 +17,11 @@ import static cz.muni.fi.pv254.utils.Utils.show;
  * Created by skylar on 27.11.15.
  */
 
-public class OneSlope {
+public class SlopeOne {
     private DataStore dataStore;
     private boolean debug;
 
-    public OneSlope(DataStore dataStore, boolean debug) {
+    public SlopeOne(DataStore dataStore, boolean debug) {
         this.dataStore = dataStore;
         this.debug = debug;
     }

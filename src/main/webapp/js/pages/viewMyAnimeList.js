@@ -23,6 +23,11 @@ module.exports = React.createClass({
         this.setState({animes: this.loadAnimes()});
     },
 
+    clearAllAnimes: function () {
+        this.setState({animes: []});
+        this.saveAnimes([]);
+    },
+
     closeAnimeDetail: function() {
         var malId = this.state.showAnimeDetail;
 
@@ -45,7 +50,7 @@ module.exports = React.createClass({
                 <Row>
                     <Col className="col-md-2"/>
                     <Col className="col-md-8">
-                        <MyAnimeGrid onItemClicked={this.animeClicked} animes={this.state.animes} />
+                        <MyAnimeGrid onItemClicked={this.animeClicked} onClearAnimes={this.clearAllAnimes} animes={this.state.animes} />
                     </Col>
                     <Col className="col-md-2"/>
                 </Row>

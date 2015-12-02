@@ -27,7 +27,7 @@ public class DbUserRepository extends Repository<DbUser> {
 
     @Inject
     public DbUserRepository(EntityManager em) {
-        super(em, maxResultCount, DbUser.class, QDbUser.dbUser);
+        super(em, maxResultCount, Setup.forbidEntitiesUpdates, DbUser.class, QDbUser.dbUser);
     }
 
     @Override

@@ -47826,6 +47826,9 @@ var Col = Reactbootstrap.Col;
 var Table = Reactbootstrap.Table;
 var Image = Reactbootstrap.Image;
 var ListGroupItem = Reactbootstrap.ListGroupItem;
+var ButtonGroup = Reactbootstrap.ButtonGroup;
+var Button = Reactbootstrap.Button;
+var AnimeStore = require('../animeStore');
 
 module.exports = React.createClass({
     displayName: 'exports',
@@ -47833,16 +47836,34 @@ module.exports = React.createClass({
     render: function render() {
 
         var buffer = [];
+        var cols = 6;
         return React.createElement(
             Table,
             null,
             this.props.animes.map((function (anime, index) {
                 buffer.push(anime);
-                var show = buffer.length == 6 || index == this.props.animes.length - 1;
+                var show = buffer.length == cols || index == this.props.animes.length - 1;
 
                 var result = show ? React.createElement(
                     'div',
                     { key: index },
+                    index < cols && show && React.createElement(
+                        Row,
+                        null,
+                        React.createElement(
+                            Col,
+                            null,
+                            React.createElement(
+                                ButtonGroup,
+                                { className: 'pull-right', style: { 'margin-bottom': '15px' } },
+                                React.createElement(
+                                    Button,
+                                    { bsStyle: 'warning', onClick: this.props.onClearAnimes },
+                                    'CLEAR THE LIST'
+                                )
+                            )
+                        )
+                    ),
                     React.createElement(
                         Row,
                         null,
@@ -47889,7 +47910,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"react":432,"react-bootstrap":204}],444:[function(require,module,exports){
+},{"../animeStore":436,"react":432,"react-bootstrap":204}],444:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -48008,7 +48029,7 @@ module.exports = React.createClass({
                     React.createElement(
                         'label',
                         null,
-                        ''
+                        'Hello World'
                     )
                 ),
                 React.createElement(Col, { className: 'col-md-2' })
@@ -48098,6 +48119,11 @@ module.exports = React.createClass({
         this.setState({ animes: this.loadAnimes() });
     },
 
+    clearAllAnimes: function clearAllAnimes() {
+        this.setState({ animes: [] });
+        this.saveAnimes([]);
+    },
+
     closeAnimeDetail: function closeAnimeDetail() {
         var malId = this.state.showAnimeDetail;
 
@@ -48127,7 +48153,7 @@ module.exports = React.createClass({
                 React.createElement(
                     Col,
                     { className: 'col-md-8' },
-                    React.createElement(MyAnimeGrid, { onItemClicked: this.animeClicked, animes: this.state.animes })
+                    React.createElement(MyAnimeGrid, { onItemClicked: this.animeClicked, onClearAnimes: this.clearAllAnimes, animes: this.state.animes })
                 ),
                 React.createElement(Col, { className: 'col-md-2' })
             ),

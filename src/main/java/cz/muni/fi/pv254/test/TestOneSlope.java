@@ -1,6 +1,6 @@
 package cz.muni.fi.pv254.test;
 
-import cz.muni.fi.pv254.algorithms.OneSlope;
+import cz.muni.fi.pv254.algorithms.SlopeOne;
 import cz.muni.fi.pv254.data.Anime;
 import cz.muni.fi.pv254.data.AnimeEntry;
 import cz.muni.fi.pv254.data.User;
@@ -122,12 +122,12 @@ public class TestOneSlope {
         dataStore.setData(users, anime);
         //dataStore.setAnimes(anime);
         //List<Double> oneSlopeValues = new ArrayList<>();
-        OneSlope oneSlope = new OneSlope(dataStore, true);
-        oneSlope.preProcess();
-        show(oneSlope.recommendToUser(Lucy, null, null));
-        show(oneSlope.recommendToUser(Lucy, 3, null));
-        show(oneSlope.recommendToUser(Lucy, null, 2));
-        show(oneSlope.recommendToUser(Lucy, 2, 2));
+        SlopeOne slopeOne = new SlopeOne(dataStore, true);
+        slopeOne.preProcess();
+        show(slopeOne.recommendToUser(Lucy, null, null));
+        show(slopeOne.recommendToUser(Lucy, 3, null));
+        show(slopeOne.recommendToUser(Lucy, null, 2));
+        show(slopeOne.recommendToUser(Lucy, 2, 2));
 
     }
 }

@@ -148,4 +148,22 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="malr:17" author="suomiy">
+        <createTable tableName="user">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="address" type="varchar(50)"/>
+            <column name="user_agent" type="varchar(10000)"/>
+            <column name="visits_count" type="bigint"/>
+            <column name="anime_entries" type="varchar(500000)"/>
+            <column name="deleted" type="boolean"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="malr:18" author="suomiy">
+        <sql splitStatements="false" endDelimiter=";" stripComments="true">
+            ALTER TABLE public.user ADD last_seen timestamp with time zone;
+        </sql>
+    </changeSet>
 </databaseChangeLog>

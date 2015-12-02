@@ -22,16 +22,18 @@ public abstract class Repository<E extends IdEntity> {
 
     @Inject
     DataStore dataStore;
+
     private final Long maxResultCount;
 
-    private static final boolean forbidEntitiesUpdates = Setup.forbidEntitiesUpdates;
+    private final boolean forbidEntitiesUpdates;
 
 
     public Repository() {
         maxResultCount = null;
+        forbidEntitiesUpdates = false;
     }
 
-    protected Repository(EntityManager em, Long maxResultCount, final Class<E> entityClass, final EntityPathBase<E> entityPathBase) {
+    protected Repository(EntityManager em, Long maxResultCount, boolean forbidEntitiesUpdates, final Class<E> entityClass, final EntityPathBase<E> entityPathBase) {
         this.em = em;
         this.entityClass = entityClass;
         this.entityPathBase = entityPathBase;
@@ -39,6 +41,7 @@ public abstract class Repository<E extends IdEntity> {
             throw new IllegalArgumentException("maxResultCount is negative number!");
         }
         this.maxResultCount = maxResultCount;
+        this.forbidEntitiesUpdates = forbidEntitiesUpdates;
     }
 
     public E create(final E entity) throws Exception {

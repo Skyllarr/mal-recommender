@@ -22,7 +22,6 @@ module.exports = React.createClass({
                 <Row>
                     <Col className="col-md-2"/>
                     <Col className="col-md-8">
-                        <label>Hello World</label>
                     </Col>
                     <Col className="col-md-2"/>
                 </Row>

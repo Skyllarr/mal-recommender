@@ -70,7 +70,7 @@ module.exports = React.createClass({
 
         var form =  <form>
             <Input buttonBefore={<Button disabled >Set score</Button>} ref="input" type="select" placeholder="Set Score from 1 to 10"  buttonAfter={<Button bsStyle="info" onClick={this.addAnime}>OK</Button>}>
-                <option value=""></option>
+                <option value=""/>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
