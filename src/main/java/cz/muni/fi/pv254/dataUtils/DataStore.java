@@ -1,5 +1,6 @@
 package cz.muni.fi.pv254.dataUtils;
 
+import cz.muni.fi.pv254.algorithms.Normalizer;
 import cz.muni.fi.pv254.data.Anime;
 import cz.muni.fi.pv254.data.AnimeEntry;
 import cz.muni.fi.pv254.data.User;
@@ -26,6 +27,8 @@ public class DataStore {
     @Inject
     AnimeRepository animeRepository;
 
+    private Double globalScoreAverage = null;
+
     private List<User> users;
     private List<Anime> animes;
     private List<Anime> animesForTextAnalysis;
@@ -34,19 +37,19 @@ public class DataStore {
     private Map<Long, Integer>  animeViewCountMap;
 
     public List<Anime> findAllAnimes() {
-        return animes;
+        return new ArrayList<>(animes);
     }
 
     public List<Anime> findAnimesForTextAnalysis() {
-        return animesForTextAnalysis;
+        return new ArrayList<>(animesForTextAnalysis);
     }
 
     public List<User> findAllUsers() {
-        return users;
+        return new ArrayList<>(users);
     }
 
     public List<AnimeEntry> findAllAnimeEntries() {
-        return animeEntries;
+        return new ArrayList<>(animeEntries);
     }
 
     public void fetchData(){
@@ -55,14 +58,14 @@ public class DataStore {
         animes = animesForTextAnalysis.stream().filter(a -> !a.isDeleted()).collect(Collectors.toList());
         animes.sort((a,b) -> a.getMalId().compareTo(b.getMalId()));
         users = userRepository.findAll();
-        prepareAnimeMaps();
+        prepareData();
     }
 
     public void partialFetchData(){
         animes = animeRepository.findAll();
         animes.sort((a,b) -> a.getMalId().compareTo(b.getMalId()));
         users = userRepository.findAll();
-        prepareAnimeMaps();
+        prepareData();
 
         users.forEach(u -> {
             List<AnimeEntry> entries = u.getAnimeEntries();
@@ -79,6 +82,10 @@ public class DataStore {
     public void flush(){
         userRepository.batchUpdate(users);
         animeRepository.batchUpdate(animes);
+    }
+
+    public Double getGlobalScoreAverage() {
+        return globalScoreAverage;
     }
 
     public User findUserByName(String name){
@@ -166,14 +173,14 @@ public class DataStore {
         this.users = users;
         this.animes = animes;
         animes.sort((a,b) -> a.getMalId().compareTo(b.getMalId()));
-        prepareAnimeMaps();
+        prepareData();
     }
 
     public void setAnimes(List<Anime> animes) {
         this.animes = animes;
     }
 
-    private void prepareAnimeMaps() {
+    private void prepareData() {
         animeEntries = new ArrayList<>();
         users.forEach(u -> animeEntries.addAll(u.getAnimeEntries()));
         animeMalIdMap = animesForTextAnalysis.stream().collect(Collectors.toMap(Anime::getMalId, a -> a, (a,b) -> a,TreeMap::new)); //animes
@@ -189,6 +196,9 @@ public class DataStore {
 
             animeViewCountMap.put(animeId, count);
         });
+
+        List<AnimeEntry>  entries = findAllAnimeEntriesWithScore();
+        globalScoreAverage = Normalizer.calculateAverage(entries);
 
     }
 }

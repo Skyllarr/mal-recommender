@@ -3,6 +3,7 @@ package cz.muni.fi.pv254.algorithms;
 import cz.muni.fi.pv254.data.AnimeEntry;
 import cz.muni.fi.pv254.data.User;
 import cz.muni.fi.pv254.dataUtils.DataStore;
+import cz.muni.fi.pv254.utils.Utils;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -14,25 +15,34 @@ import java.util.OptionalDouble;
 /**
  * Created by skylar on 22.11.15.
  */
+@ApplicationScoped
 public class Normalizer {
+    @Inject
+    DataStore dataStore;
 
-    public void normalize(DataStore dataStore) {
-        List<AnimeEntry>  entries = dataStore.findAllAnimeEntriesWithScore();
+    public void normalize() {
+        Double average = dataStore.getGlobalScoreAverage();
         Map<User, List<AnimeEntry>> usersEntries = dataStore.findUsersWithEntriesWithScore();
-
-        Double average = calculateAverage(entries);
 
         for(User user : usersEntries.keySet()){
             List<AnimeEntry> animeEntries = usersEntries.get(user);
             if(animeEntries.size() == 0){
-                continue;
+                return;
             }
 
-            Double userAverage = calculateAverage(animeEntries);
-            Double normalizationValue = average / userAverage;
-
-            animeEntries.forEach( a -> a.setNormalizedScore( a.getScore() * normalizationValue));
+            normalizeUser(average, animeEntries);
         }
+    }
+
+    public void normalizeUser(User user) {
+        normalizeUser(dataStore.getGlobalScoreAverage(), user.getAnimeEntries());
+    }
+
+    private static void normalizeUser(Double average, List<AnimeEntry> animeEntries) {
+        Double userAverage = calculateAverage(animeEntries);
+        Double normalizationValue = average / userAverage;
+
+        animeEntries.forEach( a -> a.setNormalizedScore( a.getScore() * normalizationValue));
     }
 
     public static Double calculateAverage(List<AnimeEntry> list){

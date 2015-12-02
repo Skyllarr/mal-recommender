@@ -24,11 +24,12 @@ module.exports = React.createClass({
     animeClicked: function(malId) {
         this.setState({showAnimeDetail: malId, updateEntropy: (!this.state.updateEntropy)});
     },
+
     render: function () {
 
         return (
             <div>
-                <Header/>
+                <Header navId={3}/>
                 <Row>
                     <Col className="col-md-2"/>
                     <Col className="col-md-8">

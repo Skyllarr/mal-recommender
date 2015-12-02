@@ -24,16 +24,27 @@ module.exports = React.createClass({
     },
 
     render: function () {
+        var titleObj = {
+            title1: 'ANIME RECOMMENDATIONS',
+            title2: 'MY LIST',
+            title3: 'ALL ANIMES',
+            title4: 'ABOUT'
+        };
+
+        titleObj['title' + this.props.navId] = <b> {titleObj['title' + this.props.navId]}</b>;
+
         return (
             <Row>
                 <Col className="col-md-2"/>
                 <Col className="col-md-8">
                     <Panel>
-                        <h2 >MAL Recommender</h2>
+                        <h2><b  className="color">MAL RECOMMENDER</b></h2>
                         <Nav bsStyle="pills" >
-                            <NavItem  onClick={function (){this.onClick('selectAnime')}.bind(this)}>Select Animes</NavItem>
-                            <NavItem  onClick={function (){this.onClick('viewAllAnimes')}.bind(this)}>All Animes</NavItem>
-                            <NavItem  onClick={function (){this.onClick('viewMyAnimeList')}.bind(this)}>My List</NavItem>
+                            <NavItem  onClick={function (){this.onClick('animeRecommendations', 1)}.bind(this)}>{titleObj.title1}</NavItem>
+                            <NavItem  onClick={function (){this.onClick('viewMyAnimeList', 2)}.bind(this)}>{titleObj.title2}</NavItem>
+                            <NavItem  onClick={function (){this.onClick('viewAllAnimes', 3)}.bind(this)}>{titleObj.title3}</NavItem>
+
+                            <NavItem className="pull-right disabled" onClick={function (){return false}.bind(this)}>{titleObj.title4}</NavItem>
                         </Nav>
                     </Panel>
                 </Col>

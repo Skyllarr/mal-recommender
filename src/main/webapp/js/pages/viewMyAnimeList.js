@@ -6,7 +6,7 @@ var Col = Reactbootstrap.Col;
 var AnimeStore = require('../animeStore');
 var Header = require('../components/header');
 var AnimeDetail = require('../components/animeDetail');
-var MyAnimeList = require('../lists/myAnimeList');
+var MyAnimeGrid = require('../lists/myAnimeGrid');
 
 module.exports = React.createClass({
 
@@ -39,14 +39,13 @@ module.exports = React.createClass({
     },
 
     render: function () {
-
         return (
             <div>
-                <Header/>
+                <Header navId={2}/>
                 <Row>
                     <Col className="col-md-2"/>
                     <Col className="col-md-8">
-                        <MyAnimeList onItemClicked={this.animeClicked} animes={this.state.animes} />
+                        <MyAnimeGrid onItemClicked={this.animeClicked} animes={this.state.animes} />
                     </Col>
                     <Col className="col-md-2"/>
                 </Row>

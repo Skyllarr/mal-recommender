@@ -38,6 +38,26 @@ module.exports = {
         }.bind(this));
     },
 
+    postData: function (url, data, successCallback, failCallback) {
+        $.ajax({
+            url: '/api/' + url,
+            data: JSON.stringify(data),
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            type: 'POST'
+        }).done(function (data) {
+            if (successCallback != null && successCallback instanceof Function) {
+                successCallback(data)
+            }
+
+            this.setState(data);
+        }.bind(this)).fail(function (data) {
+            if (failCallback != null && failCallback instanceof Function) {
+                failCallback(data)
+            }
+        }.bind(this));
+    },
+
     getGenresString: function (genres){
         var result = "";
         genres.forEach(function (genre, index) {

@@ -11,9 +11,23 @@ module.exports = {
         window.localStorage.setItem('animes', JSON.stringify(animes));
     },
 
+    findAnime: function(anime) {
+        if(anime == null && anime.malId == null){
+            return null;
+        }
+
+        var list = this.loadAnimes();
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].malId === anime || list[i].malId == anime.malId) {
+                return list[i];
+            }
+        }
+        return null
+    },
+
     saveAnime: function(anime) {
         var animes = this.loadAnimes();
-        animes.push({malId: anime.malId, title: anime.title, deleted: anime.deleted});
+        animes.push({malId: anime.malId, title: anime.title, deleted: anime.deleted, imageLink: anime.imageLink, score: anime.score});
         this.saveAnimes(animes);
     },
 
@@ -24,17 +38,7 @@ module.exports = {
     },
 
     containsAnime: function(anime) {
-        if(anime == null && anime.malId == null){
-            return false;
-        }
-
-        var list = this.loadAnimes();
-        for (var i = 0; i < list.length; i++) {
-            if (list[i].malId === anime || list[i].malId == anime.malId) {
-                return true;
-            }
-        }
-        return false;
+        return this.findAnime(anime) != null;
     },
 
     save: function(key, value) {
