@@ -47121,9 +47121,23 @@ module.exports = {
         window.localStorage.setItem('animes', JSON.stringify(animes));
     },
 
+    findAnime: function findAnime(anime) {
+        if (anime == null && anime.malId == null) {
+            return null;
+        }
+
+        var list = this.loadAnimes();
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].malId === anime || list[i].malId == anime.malId) {
+                return list[i];
+            }
+        }
+        return null;
+    },
+
     saveAnime: function saveAnime(anime) {
         var animes = this.loadAnimes();
-        animes.push({ malId: anime.malId, title: anime.title, deleted: anime.deleted });
+        animes.push({ malId: anime.malId, title: anime.title, deleted: anime.deleted, imageLink: anime.imageLink, score: anime.score });
         this.saveAnimes(animes);
     },
 
@@ -47136,17 +47150,7 @@ module.exports = {
     },
 
     containsAnime: function containsAnime(anime) {
-        if (anime == null && anime.malId == null) {
-            return false;
-        }
-
-        var list = this.loadAnimes();
-        for (var i = 0; i < list.length; i++) {
-            if (list[i].malId === anime || list[i].malId == anime.malId) {
-                return true;
-            }
-        }
-        return false;
+        return this.findAnime(anime) != null;
     },
 
     save: function save(key, value) {
@@ -47165,7 +47169,7 @@ var Router = require('react-router');
 var React = require('react');
 
 var Main = require('./pages/main');
-var SelectAnime = require('./pages/selectAnime');
+var AnimeRecommendations = require('./pages/animeRecommendations');
 var ViewAllAnimes = require('./pages/viewAllAnimes');
 var ViewMyAnimeList = require('./pages/viewMyAnimeList');
 
@@ -47176,7 +47180,7 @@ var routes = React.createElement(
     Route,
     null,
     React.createElement(DefaultRoute, { name: 'root', handler: Main }),
-    React.createElement(Route, { name: 'selectAnime', path: 'select-anime', handler: SelectAnime }),
+    React.createElement(Route, { name: 'animeRecommendations', path: 'anime-recommendations', handler: AnimeRecommendations }),
     React.createElement(Route, { name: 'viewAllAnimes', path: 'view-all', handler: ViewAllAnimes }),
     React.createElement(Route, { name: 'viewMyAnimeList', path: 'my-list', handler: ViewMyAnimeList })
 );
@@ -47185,7 +47189,7 @@ Router.run(routes, function (Handler) {
     React.render(React.createElement(Handler, null), document.body);
 });
 
-},{"./pages/main":443,"./pages/selectAnime":444,"./pages/viewAllAnimes":445,"./pages/viewMyAnimeList":446,"react":432,"react-router":262}],438:[function(require,module,exports){
+},{"./pages/animeRecommendations":444,"./pages/main":445,"./pages/viewAllAnimes":446,"./pages/viewMyAnimeList":447,"react":432,"react-router":262}],438:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -47228,6 +47232,26 @@ module.exports = {
         }).bind(this));
     },
 
+    postData: function postData(url, data, successCallback, failCallback) {
+        $.ajax({
+            url: '/api/' + url,
+            data: JSON.stringify(data),
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            type: 'POST'
+        }).done((function (data) {
+            if (successCallback != null && successCallback instanceof Function) {
+                successCallback(data);
+            }
+
+            this.setState(data);
+        }).bind(this)).fail((function (data) {
+            if (failCallback != null && failCallback instanceof Function) {
+                failCallback(data);
+            }
+        }).bind(this));
+    },
+
     getGenresString: function getGenresString(genres) {
         var result = "";
         genres.forEach(function (genre, index) {
@@ -47244,6 +47268,82 @@ module.exports = {
 
 var React = require('react');
 var Reactbootstrap = require('react-bootstrap');
+var ListGroupItem = Reactbootstrap.ListGroupItem;
+var Col = Reactbootstrap.Col;
+var Image = Reactbootstrap.Image;
+
+module.exports = React.createClass({
+    displayName: 'exports',
+
+    render: function render() {
+        return React.createElement(
+            Col,
+            { className: 'col-md-3 container portrait' },
+            React.createElement(
+                ListGroupItem,
+                { style: { 'margin-bottom': '10px' } },
+                React.createElement(
+                    'b',
+                    { className: 'color' },
+                    ' ',
+                    this.props.title.toUpperCase()
+                )
+            ),
+            this.props.message != null && this.props.message != "" && React.createElement(
+                ListGroupItem,
+                { bsStyle: 'warning', style: { 'margin-top': '10px' } },
+                this.props.message
+            ),
+            this.props.animes.map((function (anime, index) {
+                return React.createElement(
+                    'div',
+                    { key: index },
+                    React.createElement(Image, { className: 'pointer', src: anime.imageLink,
+                        onClick: (function () {
+                            this.props.onItemClicked(anime.malId);
+                        }).bind(this) }),
+                    React.createElement(
+                        ListGroupItem,
+                        { bsStyle: anime.deleted ? "" : "info", style: { 'margin-bottom': '10px' } },
+                        React.createElement(
+                            'a',
+                            { className: 'pointer',
+                                onClick: (function () {
+                                    this.props.onItemClicked(anime.malId);
+                                }).bind(this) },
+                            anime.title
+                        )
+                    )
+                );
+            }).bind(this))
+        );
+    }
+});
+
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ */
+
+},{"react":432,"react-bootstrap":204}],440:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var Reactbootstrap = require('react-bootstrap');
 var Common = require('../common');
 var AnimeStore = require('../animeStore');
 
@@ -47255,6 +47355,9 @@ var ListGroup = Reactbootstrap.ListGroup;
 var ListGroupItem = Reactbootstrap.ListGroupItem;
 var ButtonGroup = Reactbootstrap.ButtonGroup;
 var Button = Reactbootstrap.Button;
+var Input = Reactbootstrap.Input;
+var Popover = Reactbootstrap.Popover;
+var OverlayTrigger = Reactbootstrap.OverlayTrigger;
 
 module.exports = React.createClass({
     displayName: 'exports',
@@ -47272,37 +47375,113 @@ module.exports = React.createClass({
             popularity: null,
             description: "",
             deleted: false,
-            seen: false
+            seen: false,
+            setScore: false,
+            score: null
         };
     },
 
     componentDidMount: function componentDidMount() {
         this.loadData('anime/findanimebymalid/' + this.props.animeMalId, (function (data) {
-            if (this.containsAnime(data)) {
+            var anime = this.findAnime(this.props.animeMalId);
+            if (anime != null) {
                 data.seen = true;
+                data.score = anime.score;
             }
         }).bind(this));
     },
 
+    animeSetScore: function animeSetScore() {
+        this.setState({ setScore: true });
+    },
+
     addAnime: function addAnime() {
-        this.saveAnime(this.state);
-        this.setState({ seen: true });
+        var score = this.refs.input.getValue();
+        var state = this.state;
+        state.score = score;
+        this.saveAnime(state);
+        this.setState({ setScore: false, score: score, seen: true });
     },
 
     deleteAnime: function deleteAnime() {
         this.removeAnime(this.state);
-        this.setState({ seen: false });
+        this.setState({ seen: false, score: null });
     },
 
     render: function render() {
         var anime = this.state;
+
+        var form = React.createElement(
+            'form',
+            null,
+            React.createElement(
+                Input,
+                { buttonBefore: React.createElement(
+                        Button,
+                        { disabled: true },
+                        'Set score'
+                    ), ref: 'input', type: 'select', placeholder: 'Set Score from 1 to 10', buttonAfter: React.createElement(
+                        Button,
+                        { bsStyle: 'info', onClick: this.addAnime },
+                        'OK'
+                    ) },
+                React.createElement('option', { value: '' }),
+                React.createElement(
+                    'option',
+                    { value: '1' },
+                    '1'
+                ),
+                React.createElement(
+                    'option',
+                    { value: '2' },
+                    '2'
+                ),
+                React.createElement(
+                    'option',
+                    { value: '3' },
+                    '3'
+                ),
+                React.createElement(
+                    'option',
+                    { value: '4' },
+                    '4'
+                ),
+                React.createElement(
+                    'option',
+                    { value: '5' },
+                    '5'
+                ),
+                React.createElement(
+                    'option',
+                    { value: '6' },
+                    '6'
+                ),
+                React.createElement(
+                    'option',
+                    { value: '7' },
+                    '7'
+                ),
+                React.createElement(
+                    'option',
+                    { value: '8' },
+                    '8'
+                ),
+                React.createElement(
+                    'option',
+                    { value: '9' },
+                    '9'
+                ),
+                React.createElement(
+                    'option',
+                    { value: '10' },
+                    '10'
+                )
+            )
+        );
+
         return React.createElement(
             Modal,
-            {
-                bsSize: 'large',
-                show: true,
-                onHide: this.props.onClose
-            },
+            { bsSize: 'large', show: true, onHide: this.props.onClose },
             React.createElement(
                 Modal.Header,
                 { closeButton: true },
@@ -47368,7 +47547,17 @@ module.exports = React.createClass({
                             React.createElement(
                                 ListGroupItem,
                                 { bsStyle: anime.seen ? "success" : "" },
-                                anime.seen ? "SEEN" : "NOT SEEN"
+                                anime.seen ? anime.score != null ? React.createElement(
+                                    'div',
+                                    null,
+                                    'Your Score: ',
+                                    anime.score,
+                                    React.createElement(
+                                        'div',
+                                        { className: 'pull-right' },
+                                        'SEEN'
+                                    )
+                                ) : "SEEN" : "NOT SEEN"
                             )
                         )
                     ),
@@ -47381,11 +47570,11 @@ module.exports = React.createClass({
                 React.createElement(
                     Row,
                     null,
-                    React.createElement(Col, { className: 'col-md-6' }),
+                    React.createElement(Col, { className: 'col-md-8' }),
                     React.createElement(
                         Col,
-                        { className: 'col-md-6' },
-                        React.createElement(
+                        { className: 'col-md-4' },
+                        !this.state.setScore && React.createElement(
                             ButtonGroup,
                             { className: 'pull-right' },
                             anime.seen && React.createElement(
@@ -47393,12 +47582,19 @@ module.exports = React.createClass({
                                 { bsStyle: 'danger', onClick: this.deleteAnime },
                                 'REMOVE FROM MY LIST'
                             ),
-                            !anime.seen && React.createElement(
+                            !anime.seen && !this.state.setScore && React.createElement(
                                 Button,
-                                { bsStyle: 'info', onClick: this.addAnime },
+                                { bsStyle: 'info', onClick: this.animeSetScore },
                                 'ADD TO MY LIST'
                             )
-                        )
+                        ),
+                        !anime.deleted && this.state.setScore && React.createElement(
+                            OverlayTrigger,
+                            { trigger: 'hover', placement: 'top',
+                                overlay: React.createElement(Popover, { id: 'note about score', bsStyle: 'default', placement: 'top', title: 'Score is necessary for One Slope algorithm.' }) },
+                            form
+                        ),
+                        this.state.setScore && anime.deleted && { form: form }
                     )
                 )
             )
@@ -47406,7 +47602,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"../animeStore":436,"../common":438,"react":432,"react-bootstrap":204}],440:[function(require,module,exports){
+},{"../animeStore":436,"../common":438,"react":432,"react-bootstrap":204}],441:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -47434,6 +47630,20 @@ module.exports = React.createClass({
     },
 
     render: function render() {
+        var titleObj = {
+            title1: 'ANIME RECOMMENDATIONS',
+            title2: 'MY LIST',
+            title3: 'ALL ANIMES',
+            title4: 'ABOUT'
+        };
+
+        titleObj['title' + this.props.navId] = React.createElement(
+            'b',
+            null,
+            ' ',
+            titleObj['title' + this.props.navId]
+        );
+
         return React.createElement(
             Row,
             null,
@@ -47447,7 +47657,11 @@ module.exports = React.createClass({
                     React.createElement(
                         'h2',
                         null,
-                        'MAL Recommender'
+                        React.createElement(
+                            'b',
+                            { className: 'color' },
+                            'MAL RECOMMENDER'
+                        )
                     ),
                     React.createElement(
                         Nav,
@@ -47455,23 +47669,30 @@ module.exports = React.createClass({
                         React.createElement(
                             NavItem,
                             { onClick: (function () {
-                                    this.onClick('selectAnime');
+                                    this.onClick('animeRecommendations', 1);
                                 }).bind(this) },
-                            'Select Animes'
+                            titleObj.title1
                         ),
                         React.createElement(
                             NavItem,
                             { onClick: (function () {
-                                    this.onClick('viewAllAnimes');
+                                    this.onClick('viewMyAnimeList', 2);
                                 }).bind(this) },
-                            'All Animes'
+                            titleObj.title2
                         ),
                         React.createElement(
                             NavItem,
                             { onClick: (function () {
-                                    this.onClick('viewMyAnimeList');
+                                    this.onClick('viewAllAnimes', 3);
                                 }).bind(this) },
-                            'My List'
+                            titleObj.title3
+                        ),
+                        React.createElement(
+                            NavItem,
+                            { className: 'pull-right disabled', onClick: (function () {
+                                    return false;
+                                }).bind(this) },
+                            titleObj.title4
                         )
                     )
                 )
@@ -47481,7 +47702,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"../common":438,"react":432,"react-bootstrap":204}],441:[function(require,module,exports){
+},{"../common":438,"react":432,"react-bootstrap":204}],442:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -47595,39 +47816,163 @@ module.exports = React.createClass({
     }
 });
 
-},{"../common":438,"react":432,"react-bootstrap":204}],442:[function(require,module,exports){
+},{"../common":438,"react":432,"react-bootstrap":204}],443:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
 var Reactbootstrap = require('react-bootstrap');
-var ListGroup = Reactbootstrap.ListGroup;
+var Row = Reactbootstrap.Row;
+var Col = Reactbootstrap.Col;
+var Table = Reactbootstrap.Table;
+var Image = Reactbootstrap.Image;
 var ListGroupItem = Reactbootstrap.ListGroupItem;
 
 module.exports = React.createClass({
     displayName: 'exports',
 
     render: function render() {
+
+        var buffer = [];
         return React.createElement(
-            ListGroup,
-            { className: 'list-unstyled' },
+            Table,
+            null,
             this.props.animes.map((function (anime, index) {
-                return React.createElement(
-                    ListGroupItem,
+                buffer.push(anime);
+                var show = buffer.length == 6 || index == this.props.animes.length - 1;
+
+                var result = show ? React.createElement(
+                    'div',
                     { key: index },
                     React.createElement(
-                        'a',
-                        { className: 'pointer', onClick: (function () {
-                                this.props.onItemClicked(anime.malId);
-                            }).bind(this) },
-                        anime.title
+                        Row,
+                        null,
+                        buffer.map((function (anime, index) {
+                            return React.createElement(
+                                Col,
+                                { className: 'col-md-2 container portrait' },
+                                React.createElement(Image, { className: 'pointer', src: anime.imageLink, onClick: (function () {
+                                        this.props.onItemClicked(anime.malId);
+                                    }).bind(this) })
+                            );
+                        }).bind(this))
+                    ),
+                    React.createElement(
+                        Row,
+                        null,
+                        buffer.map((function (anime, index) {
+                            return React.createElement(
+                                Col,
+                                { className: 'col-md-2' },
+                                React.createElement(
+                                    ListGroupItem,
+                                    { style: { 'margin-bottom': '10px' } },
+                                    React.createElement(
+                                        'a',
+                                        { className: 'pointer', onClick: (function () {
+                                                this.props.onItemClicked(anime.malId);
+                                            }).bind(this) },
+                                        anime.title
+                                    )
+                                )
+                            );
+                        }).bind(this))
                     )
-                );
+                ) : null;
+
+                if (show) {
+                    buffer = [];
+                }
+
+                return result;
             }).bind(this))
         );
     }
 });
 
-},{"react":432,"react-bootstrap":204}],443:[function(require,module,exports){
+},{"react":432,"react-bootstrap":204}],444:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var Reactbootstrap = require('react-bootstrap');
+var Row = Reactbootstrap.Row;
+var Col = Reactbootstrap.Col;
+var Table = Reactbootstrap.Table;
+
+var AnimeStore = require('../animeStore');
+var Common = require('../common');
+var AnimeColumn = require('../components/animeColumn');
+var Header = require('../components/header');
+var AnimeDetail = require('../components/animeDetail');
+
+module.exports = React.createClass({
+    displayName: 'exports',
+
+    mixins: [AnimeStore, Common],
+
+    getInitialState: function getInitialState() {
+        return {
+            slopeOneList: [],
+            slopeOneWeirdList: [],
+            tfIdfList: [],
+            randomList: [],
+            showAnimeDetail: null
+        };
+    },
+
+    componentDidMount: function componentDidMount() {
+        this.onUserListChanged();
+    },
+
+    onUserListChanged: function onUserListChanged() {
+        var myList = this.loadAnimes();
+        this.postData('recommend', myList, function (data) {
+            [data.slopeOneList, data.slopeOneWeirdList, data.tfIdfList, data.randomList].forEach(function (list) {
+                if (list != null) {
+                    list.sort(function (a, b) {
+                        return b.recommendationValue - a.recommendationValue;
+                    });
+                }
+            });
+        });
+    },
+
+    closeAnimeDetail: function closeAnimeDetail() {
+        this.setState({ showAnimeDetail: null });
+    },
+
+    animeClicked: function animeClicked(malId) {
+        this.setState({ showAnimeDetail: malId });
+    },
+
+    render: function render() {
+        return React.createElement(
+            'div',
+            null,
+            React.createElement(Header, { navId: 1 }),
+            React.createElement(
+                Row,
+                null,
+                React.createElement(Col, { className: 'col-md-2' }),
+                React.createElement(
+                    Col,
+                    { className: 'col-md-8' },
+                    React.createElement(
+                        Table,
+                        null,
+                        React.createElement(AnimeColumn, { title: 'Slope One', onUserListChanged: this.onUserListChanged, message: this.state.slopeOneListMessage, onItemClicked: this.animeClicked, animes: this.state.slopeOneList }),
+                        React.createElement(AnimeColumn, { title: 'Weird', onUserListChanged: this.onUserListChanged, message: this.state.slopeOneWeirdListMessage, onItemClicked: this.animeClicked, animes: this.state.slopeOneWeirdList }),
+                        React.createElement(AnimeColumn, { title: 'Random', onUserListChanged: this.onUserListChanged, message: this.state.randomListMessage, onItemClicked: this.animeClicked, animes: this.state.randomList }),
+                        React.createElement(AnimeColumn, { title: 'Tf-Idf', onUserListChanged: this.onUserListChanged, message: this.state.tfIdfListMessage, onItemClicked: this.animeClicked, animes: this.state.tfIdfList })
+                    )
+                ),
+                React.createElement(Col, { className: 'col-md-2' })
+            ),
+            this.state.showAnimeDetail != null && React.createElement(AnimeDetail, { onClose: this.closeAnimeDetail, animeMalId: this.state.showAnimeDetail })
+        );
+    }
+});
+
+},{"../animeStore":436,"../common":438,"../components/animeColumn":439,"../components/animeDetail":440,"../components/header":441,"react":432,"react-bootstrap":204}],445:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -47663,7 +48008,7 @@ module.exports = React.createClass({
                     React.createElement(
                         'label',
                         null,
-                        'Hello World'
+                        ''
                     )
                 ),
                 React.createElement(Col, { className: 'col-md-2' })
@@ -47672,42 +48017,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"../common":438,"../components/header":440,"react":432,"react-bootstrap":204}],444:[function(require,module,exports){
-'use strict';
-
-var React = require('react');
-var Reactbootstrap = require('react-bootstrap');
-var Col = Reactbootstrap.Col;
-var Row = Reactbootstrap.Row;
-var Header = require('../components/header');
-var Common = require('../common');
-
-module.exports = React.createClass({
-    displayName: 'exports',
-
-    contextTypes: {
-        router: React.PropTypes.func
-    },
-
-    mixins: [Common],
-
-    render: function render() {
-        return React.createElement(
-            'div',
-            null,
-            React.createElement(Header, null),
-            React.createElement(
-                Row,
-                null,
-                React.createElement(Col, { className: 'col-md-2' }),
-                React.createElement(Col, { className: 'col-md-8' }),
-                React.createElement(Col, { className: 'col-md-2' })
-            )
-        );
-    }
-});
-
-},{"../common":438,"../components/header":440,"react":432,"react-bootstrap":204}],445:[function(require,module,exports){
+},{"../common":438,"../components/header":441,"react":432,"react-bootstrap":204}],446:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -47736,12 +48046,13 @@ module.exports = React.createClass({
     animeClicked: function animeClicked(malId) {
         this.setState({ showAnimeDetail: malId, updateEntropy: !this.state.updateEntropy });
     },
+
     render: function render() {
 
         return React.createElement(
             'div',
             null,
-            React.createElement(Header, null),
+            React.createElement(Header, { navId: 3 }),
             React.createElement(
                 Row,
                 null,
@@ -47758,7 +48069,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"../components/animeDetail":439,"../components/header":440,"../lists/animeList":441,"react":432,"react-bootstrap":204}],446:[function(require,module,exports){
+},{"../components/animeDetail":440,"../components/header":441,"../lists/animeList":442,"react":432,"react-bootstrap":204}],447:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -47769,7 +48080,7 @@ var Col = Reactbootstrap.Col;
 var AnimeStore = require('../animeStore');
 var Header = require('../components/header');
 var AnimeDetail = require('../components/animeDetail');
-var MyAnimeList = require('../lists/myAnimeList');
+var MyAnimeGrid = require('../lists/myAnimeGrid');
 
 module.exports = React.createClass({
     displayName: 'exports',
@@ -47805,11 +48116,10 @@ module.exports = React.createClass({
     },
 
     render: function render() {
-
         return React.createElement(
             'div',
             null,
-            React.createElement(Header, null),
+            React.createElement(Header, { navId: 2 }),
             React.createElement(
                 Row,
                 null,
@@ -47817,7 +48127,7 @@ module.exports = React.createClass({
                 React.createElement(
                     Col,
                     { className: 'col-md-8' },
-                    React.createElement(MyAnimeList, { onItemClicked: this.animeClicked, animes: this.state.animes })
+                    React.createElement(MyAnimeGrid, { onItemClicked: this.animeClicked, animes: this.state.animes })
                 ),
                 React.createElement(Col, { className: 'col-md-2' })
             ),
@@ -47826,4 +48136,4 @@ module.exports = React.createClass({
     }
 });
 
-},{"../animeStore":436,"../components/animeDetail":439,"../components/header":440,"../lists/myAnimeList":442,"react":432,"react-bootstrap":204}]},{},[437]);
+},{"../animeStore":436,"../components/animeDetail":440,"../components/header":441,"../lists/myAnimeGrid":443,"react":432,"react-bootstrap":204}]},{},[437]);
