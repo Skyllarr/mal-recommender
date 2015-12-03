@@ -27,7 +27,7 @@ module.exports = React.createClass({
                             <div key={index}>
                                 { index < cols && show &&
                                 <Row>
-                                    <Col >
+                                    <Col className="col-md-12">
                                         <ButtonGroup className="pull-right" style={{'margin-bottom': '15px'}}>
                                             <Button bsStyle="warning" onClick={this.props.onClearAnimes}>CLEAR THE LIST</Button>
                                         </ButtonGroup>

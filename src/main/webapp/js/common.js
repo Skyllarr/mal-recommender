@@ -30,7 +30,9 @@ module.exports = {
                 successCallback(data)
             }
 
-            this.setState(data);
+            if(data != null){
+                this.setState(data);
+            }
         }.bind(this)).fail(function (data) {
             if (failCallback != null && failCallback instanceof Function) {
                 failCallback(data)
@@ -50,7 +52,9 @@ module.exports = {
                 successCallback(data)
             }
 
-            this.setState(data);
+            if(data != null){
+                this.setState(data);
+            }
         }.bind(this)).fail(function (data) {
             if (failCallback != null && failCallback instanceof Function) {
                 failCallback(data)
@@ -66,5 +70,15 @@ module.exports = {
         });
 
         return result;
+    },
+
+    sortListByValue: function (list, sortValue, asc) {
+        if (list != null) {
+            list.sort(function (a, b) {
+                var v1 = a[sortValue];
+                var v2 = b[sortValue];
+                return asc == true ? v1 - v2 : v2 -v1;
+            });
+        }
     }
 };

@@ -56,17 +56,8 @@ public class RecommendationResource {
         if(entries == null) {
             return  null;
         }
-        logUser(request, entries);
-
         RecommendationDTO result = new RecommendationDTO();
-        List<AnimeDTO> slopeOneList = null;
-        List<AnimeDTO> slopeOneWeirdList = null;
-        List<AnimeDTO> tfIdfList = null;
-
-        List<AnimeDTO> randomList = Utils.getRandomSubList(dataStore.findAnimesForTextAnalysis().stream().filter(a -> !a.getGenres().contains(Genre.HENTAI))
-                .collect(Collectors.toList()), outputSize).stream()
-                .map(e -> new AnimeDTO(e, 0D))
-                .collect(Collectors.toList());
+        logUser(request, entries);
 
         List<AnimeEntry> allEntries = entries.stream().filter(e -> e.getMalId() != 0).collect(Collectors.toList());
         allEntries.forEach(e -> {
@@ -74,37 +65,53 @@ public class RecommendationResource {
             e.setStatus(AnimeEntryStatus.COMPLETED);
         });
 
-        List<AnimeEntry> oneslopeEntries = allEntries.stream()
+        // Slope One
+        List<AnimeEntry> slopeOneEntries = allEntries.stream()
                 .filter(e -> e.getScore() != 0 && !dataStore.findAnimeByMalId(e.getMalId()).isDeleted())
                 .collect(Collectors.toList());
 
-        if(oneslopeEntries.size() >= minOneSlopeEntries){
+        if(slopeOneEntries.size() >= minOneSlopeEntries){
             User user = new User();
-            user.setAnimeEntries(oneslopeEntries);
+            user.setAnimeEntries(slopeOneEntries);
             normalizer.normalizeUser(user);
 
-            Map<Anime, Double> map = Utils.sortByValue((new SlopeOne(dataStore, false)).recommendToUser(user, minOneSlopeEntries, null));
-            slopeOneList = map.entrySet().stream()
-                    .limit(outputSize).map(e -> new AnimeDTO(e.getKey(), e.getValue()))
-                    .collect(Collectors.toList());
-
-            map = Utils.sortByValue((new SlopeOne(dataStore, false)).recommendToUser(user, null, maxOneSlopeWeirdEntries));
-            slopeOneWeirdList = map.entrySet().stream()
-                    .limit(outputSize).map(e -> new AnimeDTO(e.getKey(), e.getValue()))
-                    .collect(Collectors.toList());
+            result.setSlopeOneList(getSlopeOneList(user));
+            result.setSlopeOneWeirdList(getSlopeOneWeirdList(user));
         }else{
-            String message = "Only " + oneslopeEntries.size() + " scored animes designated for One Slope algorithm are in your list. Minimum of " + minOneSlopeEntries + "  is required.";
+            String message = "Only " + slopeOneEntries.size() + " scored animes designated for One Slope algorithm are in your list. Minimum of " + minOneSlopeEntries + "  is required.";
             result.setSlopeOneListMessage(message);
             result.setSlopeOneWeirdListMessage(message);
         }
 
-        result.setRandomList(randomList);
-        result.setSlopeOneList(slopeOneList);
-        result.setSlopeOneWeirdList(slopeOneWeirdList);
-        result.setTfIdfList(tfIdfList);
+        result.setRandomList(getRandomList());
+
+        //TODO
+        //result.setTfIdfList(tfIdfList);
         result.setTfIdfListMessage("TBD");
 
         return result;
+    }
+
+    private List<AnimeDTO> getRandomList(){
+        return Utils.getRandomSubList(dataStore.findAnimesForTextAnalysis().stream()
+                .filter(a -> !a.getGenres().contains(Genre.HENTAI))
+                .collect(Collectors.toList()), outputSize).stream()
+                .map(e -> new AnimeDTO(e, 0D))
+                .collect(Collectors.toList());
+    }
+
+    private List<AnimeDTO> getSlopeOneList(User user){
+        Map<Anime, Double> map = Utils.sortByValue((new SlopeOne(dataStore, false)).recommendToUser(user, minOneSlopeEntries, null));
+        return map.entrySet().stream()
+                .limit(outputSize).map(e -> new AnimeDTO(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    private List<AnimeDTO> getSlopeOneWeirdList(User user){
+        Map<Anime, Double> map = Utils.sortByValue((new SlopeOne(dataStore, false)).recommendToUser(user, null, maxOneSlopeWeirdEntries));
+        return map.entrySet().stream()
+                .limit(outputSize).map(e -> new AnimeDTO(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
     }
 
     private void logUser(HttpServletRequest request, List<AnimeEntry> entries){

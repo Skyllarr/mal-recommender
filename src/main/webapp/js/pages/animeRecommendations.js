@@ -32,15 +32,15 @@ module.exports = React.createClass({
 
     onUserListChanged: function(){
         var myList = this.loadAnimes();
-        this.postData('recommend', myList, function (data) {
-            [data.slopeOneList, data.slopeOneWeirdList, data.tfIdfList, data.randomList].forEach(function (list) {
-                if(list != null){
-                    list.sort(function (a, b) {
-                        return b.recommendationValue - a.recommendationValue
-                    });
+        if(myList != null || myList.length != 0) {
+            this.postData('recommend', myList, function (data) {
+                if (data != null) {
+                    [data.slopeOneList, data.slopeOneWeirdList, data.tfIdfList].forEach( function(list) {
+                        this.sortListByValue(list, 'recommendationValue')
+                    }.bind(this));
                 }
-            });
-        });
+            }.bind(this));
+        }
     },
 
     closeAnimeDetail: function() {
