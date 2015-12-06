@@ -166,4 +166,11 @@
             ALTER TABLE public.user ADD last_seen timestamp with time zone;
         </sql>
     </changeSet>
+
+    <changeSet id="malr:19" author="suomiy">
+        <modifyDataType columnName="description_similarity_vector"
+                        newDataType="varchar(500000)"
+                        schemaName="public"
+                        tableName="mal_anime"/>
+    </changeSet>
 </databaseChangeLog>

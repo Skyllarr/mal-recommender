@@ -17,25 +17,21 @@ public class Anime implements MAL {
     private DbAnime dbAnime;
     private List<Genre> genres;
     private List<Pair<Integer, Double>> differenceVector;
-    private List<Double> descriptionSimilarityVector;
 
     public Anime() {
         dbAnime = new DbAnime();
         genres = new ArrayList<>();
         differenceVector = new ArrayList<>();
-        descriptionSimilarityVector = new ArrayList<>();
     }
 
     public Anime(DbAnime dbAnime) {
         this.dbAnime = dbAnime;
         this.genres = dbAnime.getGenreEntriesAsList();
         differenceVector = dbAnime.getDifferenceVectorAsList();
-        descriptionSimilarityVector = dbAnime.getDescriptionSimilarityVectorAsList();
 
         // takes less memory, but entity cannot be updated after this
         if(Setup.forbidEntitiesUpdates){
             dbAnime.setDifferenceVector(null);
-            dbAnime.setDescriptionSimilarityVector(null);
             dbAnime.setGenreEntries(null);
         }
     }
@@ -44,7 +40,6 @@ public class Anime implements MAL {
         dbAnime = new DbAnime(title, imageLink, malId, episodes, type);
         genres = new ArrayList<>();
         differenceVector = new ArrayList<>();
-        descriptionSimilarityVector = new ArrayList<>();
     }
 
     public Long getEpisodes() {
@@ -125,14 +120,6 @@ public class Anime implements MAL {
 
     public void setDifferenceVector(List<Pair<Integer, Double>> differenceVector) {
         this.differenceVector = differenceVector;
-    }
-
-    public List<Double> getDescriptionSimilarityVector() {
-        return descriptionSimilarityVector;
-    }
-
-    public void setDescriptionSimilarityVector(List<Double> descriptionSimilarityVector) {
-        this.descriptionSimilarityVector = descriptionSimilarityVector;
     }
 
     public DbAnime getDbAnime() {

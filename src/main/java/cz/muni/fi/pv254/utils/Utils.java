@@ -41,6 +41,10 @@ public class Utils {
         show(sortByValue(map));
     }
 
+    public static <K> void showSortedFloat(Map<K, Float> map) {
+        show(sortByValue(map));
+    }
+
     public static void showSortedByKeys(Map<Object, Integer> map) {
         Map<Double, Integer> result = new HashMap<>();
         map.entrySet().forEach((e) -> result.put(((Number)e.getKey()).doubleValue(), e.getValue()));

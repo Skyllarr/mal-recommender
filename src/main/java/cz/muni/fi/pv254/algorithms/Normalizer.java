@@ -20,7 +20,7 @@ public class Normalizer {
     @Inject
     DataStore dataStore;
 
-    private static final double maxNormalizedValue = 13; // do not allow excessively large scores
+    private static final int maxNormalizedValue = 13; // do not allow excessively large scores
 
     public void normalize() {
         Double average = dataStore.getGlobalScoreAverage();
@@ -45,7 +45,7 @@ public class Normalizer {
         Double normalizationValue = average / userAverage;
 
         animeEntries.forEach( a -> {
-            Double result = a.getScore() * normalizationValue;
+            float result = (float) (a.getScore() * normalizationValue);
             result = result < maxNormalizedValue ? result : maxNormalizedValue;
             a.setNormalizedScore(result);
         });

@@ -65,11 +65,16 @@ module.exports = {
     getGenresString: function (genres){
         var result = "";
         genres.forEach(function (genre, index) {
-            var parsed = genre == 'SCI_FI' ? genre.toLowerCase().replace(/_/g, '-') : genre.toLowerCase().replace(/_/g, ' ');
-            result = result + parsed.capitalizeFirstLetter() + ((genres.length == index + 1 ) ? "" : ", ");
-        });
+            result = result + this.getGenreString(genre) + ((genres.length == index + 1 ) ? "" : ", ");
+        }.bind(this));
 
         return result;
+    },
+
+    getGenreString: function (genre){
+        return (genre == 'SCI_FI' ? genre.toLowerCase().replace(/_/g, '-') : genre.toLowerCase().replace(/_/g, ' '))
+            .capitalizeFirstLetter();
+
     },
 
     sortListByValue: function (list, sortValue, asc) {
@@ -80,5 +85,6 @@ module.exports = {
                 return asc == true ? v1 - v2 : v2 -v1;
             });
         }
-    }
+    },
+
 };

@@ -1,6 +1,7 @@
 package cz.muni.fi.pv254.data.entity;
 
 import cz.muni.fi.pv254.data.AnimeEntry;
+import cz.muni.fi.pv254.data.MAL;
 import cz.muni.fi.pv254.data.enums.Gender;
 import cz.muni.fi.pv254.dataUtils.JsonParser;
 import cz.muni.fi.pv254.utils.Utils;
@@ -20,7 +21,7 @@ import java.util.List;
 @Table(name = "mal_user")
 @Getter
 @Setter
-public class DbUser extends  IdEntity{
+public class DbUser extends  IdEntity implements MAL {
 
     private String name;
     @Column(name = "mal_id")

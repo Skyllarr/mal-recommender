@@ -47189,7 +47189,7 @@ Router.run(routes, function (Handler) {
     React.render(React.createElement(Handler, null), document.body);
 });
 
-},{"./pages/animeRecommendations":444,"./pages/main":445,"./pages/viewAllAnimes":446,"./pages/viewMyAnimeList":447,"react":432,"react-router":262}],438:[function(require,module,exports){
+},{"./pages/animeRecommendations":446,"./pages/main":447,"./pages/viewAllAnimes":448,"./pages/viewMyAnimeList":449,"react":432,"react-router":262}],438:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -47258,12 +47258,15 @@ module.exports = {
 
     getGenresString: function getGenresString(genres) {
         var result = "";
-        genres.forEach(function (genre, index) {
-            var parsed = genre == 'SCI_FI' ? genre.toLowerCase().replace(/_/g, '-') : genre.toLowerCase().replace(/_/g, ' ');
-            result = result + parsed.capitalizeFirstLetter() + (genres.length == index + 1 ? "" : ", ");
-        });
+        genres.forEach((function (genre, index) {
+            result = result + this.getGenreString(genre) + (genres.length == index + 1 ? "" : ", ");
+        }).bind(this));
 
         return result;
+    },
+
+    getGenreString: function getGenreString(genre) {
+        return (genre == 'SCI_FI' ? genre.toLowerCase().replace(/_/g, '-') : genre.toLowerCase().replace(/_/g, ' ')).capitalizeFirstLetter();
     },
 
     sortListByValue: function sortListByValue(list, sortValue, asc) {
@@ -47275,6 +47278,7 @@ module.exports = {
             });
         }
     }
+
 };
 
 },{"jquery":62}],439:[function(require,module,exports){
@@ -47621,6 +47625,131 @@ module.exports = React.createClass({
 
 var React = require('react');
 var Reactbootstrap = require('react-bootstrap');
+var Common = require('../common');
+var AnimeStore = require('../animeStore');
+
+var Modal = Reactbootstrap.Modal;
+var Col = Reactbootstrap.Col;
+var Row = Reactbootstrap.Row;
+var ButtonGroup = Reactbootstrap.ButtonGroup;
+var Button = Reactbootstrap.Button;
+var Input = Reactbootstrap.Input;
+
+module.exports = React.createClass({
+    displayName: 'exports',
+
+    mixins: [Common, AnimeStore],
+
+    getInitialState: function getInitialState() {
+        return {};
+    },
+
+    componentDidMount: function componentDidMount() {
+        this.setState(this.props.genres);
+    },
+
+    onClose: function onClose() {
+        this.props.onClose(this.state);
+    },
+
+    toggleAll: function toggleAll() {
+        var genres = this.state;
+        var toggleCount = 0;
+        for (var genre in genres) {
+            if (genres.hasOwnProperty(genre)) {
+                toggleCount += genres[genre] ? -1 : 1;
+            }
+        }
+
+        var toggleValue = toggleCount >= 0;
+
+        for (var genre in genres) {
+            if (genres.hasOwnProperty(genre)) {
+                genres[genre] = toggleValue;
+            }
+        }
+
+        this.setState(genres);
+    },
+
+    render: function render() {
+        var genres = this.state;
+
+        var output = [];
+        var buffer = [];
+        var cols = 4;
+
+        for (var genre in genres) {
+            if (genres.hasOwnProperty(genre)) {
+                var item = React.createElement(Input, { type: 'checkbox', label: this.getGenreString(genre), checked: genres[genre], onChange: (function (genre, event) {
+                        var res = {};
+                        res[genre] = event.target.checked;
+                        this.setState(res);
+                    }).bind(this, genre) });
+                output.push(item);
+            }
+        }
+
+        return React.createElement(
+            Modal,
+            { bsSize: 'large', show: true, onHide: this.onClose },
+            React.createElement(
+                Modal.Header,
+                { closeButton: true },
+                React.createElement(
+                    Modal.Title,
+                    null,
+                    'Show me these genres'
+                )
+            ),
+            React.createElement(
+                Modal.Body,
+                null,
+                React.createElement(
+                    Col,
+                    { className: 'col-md-12' },
+                    React.createElement(
+                        ButtonGroup,
+                        { className: 'pull-right', style: { 'margin-bottom': '15px' } },
+                        React.createElement(
+                            Button,
+                            { bsStyle: 'info', onClick: this.toggleAll },
+                            'TOGGLE ALL'
+                        )
+                    )
+                ),
+                output.map((function (genre, index) {
+                    buffer.push(genre);
+                    var show = buffer.length == cols || index == output.length - 1;
+
+                    var result = show ? React.createElement(
+                        Row,
+                        { key: index },
+                        buffer.map((function (genre, index) {
+                            return React.createElement(
+                                Col,
+                                { key: index, className: 'col-md-3' },
+                                genre
+                            );
+                        }).bind(this))
+                    ) : null;
+
+                    if (show) {
+                        buffer = [];
+                    }
+
+                    return result;
+                }).bind(this))
+            )
+        );
+    }
+});
+
+},{"../animeStore":436,"../common":438,"react":432,"react-bootstrap":204}],442:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var Reactbootstrap = require('react-bootstrap');
 var Panel = Reactbootstrap.Panel;
 
 var Nav = Reactbootstrap.Nav;
@@ -47716,7 +47845,70 @@ module.exports = React.createClass({
     }
 });
 
-},{"../common":438,"react":432,"react-bootstrap":204}],442:[function(require,module,exports){
+},{"../common":438,"react":432,"react-bootstrap":204}],443:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+
+    loadGenres: function loadGenres() {
+        var storageJson = window.localStorage.getItem('genres');
+        return storageJson == null ? this.getDefaultGenresSettings() : JSON.parse(storageJson);
+    },
+
+    saveGenres: function saveGenres(genres) {
+        window.localStorage.setItem('genres', JSON.stringify(genres));
+    },
+
+    getDefaultGenresSettings: function getDefaultGenresSettings() {
+        return {
+            ACTION: true,
+            ADVENTURE: true,
+            CARS: true,
+            COMEDY: true,
+            DEMENTIA: true,
+            DEMONS: true,
+            DRAMA: true,
+            ECCHI: true,
+            FANTASY: true,
+            GAME: true,
+            HAREM: true,
+            HENTAI: false,
+            HISTORICAL: true,
+            HORROR: true,
+            JOSEI: true,
+            KIDS: true,
+            MAGIC: true,
+            MARTIAL_ARTS: true,
+            MECHA: true,
+            MILITARY: true,
+            MUSIC: true,
+            MYSTERY: true,
+            PARODY: true,
+            POLICE: true,
+            PSYCHOLOGICAL: true,
+            ROMANCE: true,
+            SAMURAI: true,
+            SCHOOL: true,
+            SCI_FI: true,
+            SEINEN: true,
+            SHOUJO: true,
+            SHOUJO_AI: true,
+            SHOUNEN: true,
+            SHOUNEN_AI: true,
+            SLICE_OF_LIFE: true,
+            SPACE: true,
+            SPORTS: true,
+            SUPER_POWER: true,
+            SUPERNATURAL: true,
+            THRILLER: true,
+            VAMPIRE: true,
+            YAOI: true,
+            YURI: true
+        };
+    }
+};
+
+},{}],444:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -47755,10 +47947,10 @@ module.exports = React.createClass({
     },
 
     handleSearchChange: function handleSearchChange() {
-        var value = this.refs.input.getValue().escapeRegExp();
+        var value = this.refs.input.getValue().toLowerCase().escapeRegExp();
 
         this.state.animes.forEach(function (anime) {
-            anime.doNotShow = value != null && value != '' && !new RegExp(value).test(anime.title) ? true : null;
+            anime.doNotShow = value != null && value != '' && !new RegExp(value).test(anime.title.toLowerCase()) ? true : null;
         });
 
         this.setState({ animes: this.state.animes });
@@ -47830,7 +48022,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"../common":438,"react":432,"react-bootstrap":204}],443:[function(require,module,exports){
+},{"../common":438,"react":432,"react-bootstrap":204}],445:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -47924,7 +48116,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"../animeStore":436,"react":432,"react-bootstrap":204}],444:[function(require,module,exports){
+},{"../animeStore":436,"react":432,"react-bootstrap":204}],446:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -47932,17 +48124,21 @@ var Reactbootstrap = require('react-bootstrap');
 var Row = Reactbootstrap.Row;
 var Col = Reactbootstrap.Col;
 var Table = Reactbootstrap.Table;
+var ButtonGroup = Reactbootstrap.ButtonGroup;
+var Button = Reactbootstrap.Button;
 
 var AnimeStore = require('../animeStore');
+var GenreStore = require('../genreStore');
 var Common = require('../common');
 var AnimeColumn = require('../components/animeColumn');
 var Header = require('../components/header');
 var AnimeDetail = require('../components/animeDetail');
+var GenreSettings = require('../components/genresSettings');
 
 module.exports = React.createClass({
     displayName: 'exports',
 
-    mixins: [AnimeStore, Common],
+    mixins: [AnimeStore, GenreStore, Common],
 
     getInitialState: function getInitialState() {
         return {
@@ -47950,7 +48146,10 @@ module.exports = React.createClass({
             slopeOneWeirdList: [],
             tfIdfList: [],
             randomList: [],
+            genres: this.loadGenres(),
+            showGenreList: false,
             showAnimeDetail: null
+
         };
     },
 
@@ -47961,7 +48160,7 @@ module.exports = React.createClass({
     onUserListChanged: function onUserListChanged() {
         var myList = this.loadAnimes();
         if (myList != null || myList.length != 0) {
-            this.postData('recommend', myList, (function (data) {
+            this.postData('recommend', { entries: myList, genres: this.state.genres }, (function (data) {
                 if (data != null) {
                     [data.slopeOneList, data.slopeOneWeirdList, data.tfIdfList].forEach((function (list) {
                         this.sortListByValue(list, 'recommendationValue');
@@ -47979,6 +48178,15 @@ module.exports = React.createClass({
         this.setState({ showAnimeDetail: malId });
     },
 
+    setGenres: function setGenres(genres) {
+        this.setState({ genres: genres, showGenreList: false });
+        this.saveGenres(genres);
+    },
+
+    showGenres: function showGenres() {
+        this.setState({ showGenreList: true });
+    },
+
     render: function render() {
         return React.createElement(
             'div',
@@ -47994,20 +48202,38 @@ module.exports = React.createClass({
                     React.createElement(
                         Table,
                         null,
+                        React.createElement(
+                            'thead',
+                            null,
+                            React.createElement(
+                                Col,
+                                { className: 'col-md-12' },
+                                React.createElement(
+                                    ButtonGroup,
+                                    { className: 'pull-right', style: { 'margin-bottom': '15px' } },
+                                    React.createElement(
+                                        Button,
+                                        { bsStyle: 'info', onClick: this.showGenres },
+                                        'FILTER GENRES'
+                                    )
+                                )
+                            )
+                        ),
                         React.createElement(AnimeColumn, { title: 'Slope One', onUserListChanged: this.onUserListChanged, message: this.state.slopeOneListMessage, onItemClicked: this.animeClicked, animes: this.state.slopeOneList }),
                         React.createElement(AnimeColumn, { title: 'Weird', onUserListChanged: this.onUserListChanged, message: this.state.slopeOneWeirdListMessage, onItemClicked: this.animeClicked, animes: this.state.slopeOneWeirdList }),
-                        React.createElement(AnimeColumn, { title: 'Random', onUserListChanged: this.onUserListChanged, message: this.state.randomListMessage, onItemClicked: this.animeClicked, animes: this.state.randomList }),
-                        React.createElement(AnimeColumn, { title: 'Tf-Idf', onUserListChanged: this.onUserListChanged, message: this.state.tfIdfListMessage, onItemClicked: this.animeClicked, animes: this.state.tfIdfList })
+                        React.createElement(AnimeColumn, { title: 'Tf-Idf', onUserListChanged: this.onUserListChanged, message: this.state.tfIdfListMessage, onItemClicked: this.animeClicked, animes: this.state.tfIdfList }),
+                        React.createElement(AnimeColumn, { title: 'Random', onUserListChanged: this.onUserListChanged, message: this.state.randomListMessage, onItemClicked: this.animeClicked, animes: this.state.randomList })
                     )
                 ),
                 React.createElement(Col, { className: 'col-md-2' })
             ),
-            this.state.showAnimeDetail != null && React.createElement(AnimeDetail, { onClose: this.closeAnimeDetail, animeMalId: this.state.showAnimeDetail })
+            this.state.showAnimeDetail != null && React.createElement(AnimeDetail, { onClose: this.closeAnimeDetail, animeMalId: this.state.showAnimeDetail }),
+            this.state.showGenreList && React.createElement(GenreSettings, { onClose: this.setGenres, genres: this.state.genres })
         );
     }
 });
 
-},{"../animeStore":436,"../common":438,"../components/animeColumn":439,"../components/animeDetail":440,"../components/header":441,"react":432,"react-bootstrap":204}],445:[function(require,module,exports){
+},{"../animeStore":436,"../common":438,"../components/animeColumn":439,"../components/animeDetail":440,"../components/genresSettings":441,"../components/header":442,"../genreStore":443,"react":432,"react-bootstrap":204}],447:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -48044,7 +48270,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"../common":438,"../components/header":441,"react":432,"react-bootstrap":204}],446:[function(require,module,exports){
+},{"../common":438,"../components/header":442,"react":432,"react-bootstrap":204}],448:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -48096,7 +48322,7 @@ module.exports = React.createClass({
     }
 });
 
-},{"../components/animeDetail":440,"../components/header":441,"../lists/animeList":442,"react":432,"react-bootstrap":204}],447:[function(require,module,exports){
+},{"../components/animeDetail":440,"../components/header":442,"../lists/animeList":444,"react":432,"react-bootstrap":204}],449:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -48168,4 +48394,4 @@ module.exports = React.createClass({
     }
 });
 
-},{"../animeStore":436,"../components/animeDetail":440,"../components/header":441,"../lists/myAnimeGrid":443,"react":432,"react-bootstrap":204}]},{},[437]);
+},{"../animeStore":436,"../components/animeDetail":440,"../components/header":442,"../lists/myAnimeGrid":445,"react":432,"react-bootstrap":204}]},{},[437]);

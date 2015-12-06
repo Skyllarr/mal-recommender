@@ -39,9 +39,9 @@ public class JsonParser {
         return (entries == null || "".equals(entries)) ?  new ArrayList<>() : gson.fromJson(entries, listType);
     }
 
-    public static List<Double> loadAsDescriptionSimilarityVector(String parseString) {
+    public static List<Float> loadAsDescriptionSimilarityVector(String parseString) {
         Gson gson = new Gson();
-        Type listType = new TypeToken<ArrayList<Double>>() {}.getType();
+        Type listType = new TypeToken<ArrayList<Float>>() {}.getType();
         return (parseString == null || "".equals(parseString)) ?  new ArrayList<>() : gson.fromJson(parseString, listType);
     }
 }

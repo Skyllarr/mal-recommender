@@ -17,16 +17,16 @@ public class AnimeEntry implements MAL{
     @SerializedName("m")
     private long malId;
     @SerializedName("s")
-    private long score;
+    private int score;
     @SerializedName("n")
-    private double normalizedScore;
+    private float normalizedScore;
     @SerializedName("t")
     private AnimeEntryStatus status;
 
     public AnimeEntry() {
     }
 
-    public AnimeEntry(Long malId, Long score, AnimeEntryStatus status) {
+    public AnimeEntry(Long malId, Integer score, AnimeEntryStatus status) {
         super();
         this.malId = malId;
         this.score = score;

@@ -72,17 +72,17 @@ public class TestOneSlope {
         animeEntry10.setMalId(4l);
         animeEntry11.setMalId(4l);
 
-        animeEntry1.setNormalizedScore(4.0);
-        animeEntry2.setNormalizedScore(5.0);
-        animeEntry3.setNormalizedScore(3.0);
-        animeEntry4.setNormalizedScore(3.0);
-        animeEntry5.setNormalizedScore(4.0);
-        animeEntry6.setNormalizedScore(2.0);
-        animeEntry7.setNormalizedScore(1.0);
-        animeEntry8.setNormalizedScore(2.0);
-        animeEntry9.setNormalizedScore(5.0);
-        animeEntry10.setNormalizedScore(3.0);
-        animeEntry11.setNormalizedScore(1.0);
+        animeEntry1.setNormalizedScore(4);
+        animeEntry2.setNormalizedScore(5);
+        animeEntry3.setNormalizedScore(3);
+        animeEntry4.setNormalizedScore(3);
+        animeEntry5.setNormalizedScore(4);
+        animeEntry6.setNormalizedScore(2);
+        animeEntry7.setNormalizedScore(1);
+        animeEntry8.setNormalizedScore(2);
+        animeEntry9.setNormalizedScore(5);
+        animeEntry10.setNormalizedScore(3);
+        animeEntry11.setNormalizedScore(1f);
 
 
         List<AnimeEntry> johnAnimes = new ArrayList<>();

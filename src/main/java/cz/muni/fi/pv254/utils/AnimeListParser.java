@@ -135,7 +135,7 @@ public class AnimeListParser {
         }
 
         AnimeEntryStatus status =  AnimeEntryStatus.get(getIntValue(animeElem, "my_status"));
-        Long score = (long) getIntValue(animeElem, "my_score");
+        Integer score =  getIntValue(animeElem, "my_score");
         usersAnimeEntries.add(new AnimeEntry(anime.getMalId(), score, status));
 
     }

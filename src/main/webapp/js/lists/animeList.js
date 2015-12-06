@@ -33,10 +33,10 @@ module.exports = React.createClass({
     },
 
     handleSearchChange() {
-        var value = this.refs.input.getValue().escapeRegExp();
+        var value = this.refs.input.getValue().toLowerCase().escapeRegExp();
 
         this.state.animes.forEach(function (anime) {
-            anime.doNotShow = (value != null && value != '' &&  !(new RegExp(value)).test(anime.title)) ? true : null;
+            anime.doNotShow = (value != null && value != '' &&  !(new RegExp(value)).test(anime.title.toLowerCase())) ? true : null;
         });
 
         this.setState({animes: this.state.animes});

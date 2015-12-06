@@ -1,7 +1,7 @@
 module.exports = function (grunt) {
     var src = 'src/main/webapp/js/',
         destProd = 'src/main/webapp/webapp-target/',
-        dest = 'target/MyAnimeListRecommender/webapp-target/';
+        dest = 'target/MyAnimeListRecommenderDevelopment.war/webapp-target/';
 
 
     grunt.initConfig({

@@ -1,6 +1,7 @@
 package cz.muni.fi.pv254.data.entity;
 
 import com.mysema.commons.lang.Pair;
+import cz.muni.fi.pv254.data.MAL;
 import cz.muni.fi.pv254.data.enums.AnimeType;
 import cz.muni.fi.pv254.data.enums.Genre;
 import cz.muni.fi.pv254.dataUtils.JsonParser;
@@ -11,6 +12,7 @@ import lombok.Setter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,7 +22,7 @@ import java.util.List;
 @Table(name = "mal_anime")
 @Getter
 @Setter
-public class DbAnime extends IdEntity{
+public class DbAnime extends IdEntity implements MAL {
 
     private String title;
     @Column(name = "image_link")
@@ -31,8 +33,6 @@ public class DbAnime extends IdEntity{
     private String genreEntries;
     @Column(name = "difference_vector")
     private String differenceVector;
-    @Column(name = "description_similarity_vector")
-    private String descriptionSimilarityVector;
     private Long episodes;
     private AnimeType type;
     private Long popularity;
@@ -60,9 +60,6 @@ public class DbAnime extends IdEntity{
         this.differenceVector = Utils.removeEmptyStr(differenceVector);
     }
 
-    public void setDescriptionSimilarityVector(String descriptionSimilarityVector) {
-        this.descriptionSimilarityVector = Utils.removeEmptyStr(descriptionSimilarityVector);
-    }
 
     public void setImageLink(String imageLink) {
         this.imageLink = Utils.removeEmptyStr(imageLink);
@@ -87,14 +84,6 @@ public class DbAnime extends IdEntity{
 
     public void setDifferenceVectorAsString(List<Pair<Integer, Double>> differenceVector) {
         setDifferenceVector(JsonParser.save(differenceVector));
-    }
-
-    public List<Double> getDescriptionSimilarityVectorAsList() {
-        return JsonParser.loadAsDescriptionSimilarityVector(descriptionSimilarityVector);
-    }
-
-    public void setDescriptionSimilarityVectorAsString(List<Double> descriptionSimilarityVector) {
-        setDescriptionSimilarityVector(JsonParser.save(descriptionSimilarityVector));
     }
 
     @Override

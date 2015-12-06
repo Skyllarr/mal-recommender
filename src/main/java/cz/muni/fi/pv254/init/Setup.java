@@ -47,6 +47,7 @@ public class Setup {
     // null == All Entries
     public static final Long userMaxResultCount = null;
     public static final Long animeMaxResultCount = null;
+    public static final Long maxAnimesForTextAnalyserRecommendations = 1000L;
     public static final boolean forbidEntitiesUpdates = true;
 
     @Produces

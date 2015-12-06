@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class TestTextAnalyzer {
 
-        public static void run(DataStore dataStore) {
+        public static void run(DataStore dataStore, TextAnalyzer textAnalyzer) {
 
 
                 Anime anime1 = new Anime();
@@ -45,16 +45,15 @@ public class TestTextAnalyzer {
                 anime.add(anime4);
                 //dataStore.setData(new ArrayList<>(), anime);
                 dataStore.fetchData();
-                TextAnalyzer textAnalyzer = new TextAnalyzer(dataStore);
                 textAnalyzer.preProcess(true);
                 User user = new User();
                 List<AnimeEntry> listAnimeEntries = new ArrayList<>();
-                listAnimeEntries.add(new AnimeEntry(269l, 8l, AnimeEntryStatus.COMPLETED));//Long malId, Long score, AnimeEntryStatus status
+                listAnimeEntries.add(new AnimeEntry(269l, 8, AnimeEntryStatus.COMPLETED));//Long malId, Long score, AnimeEntryStatus status
                 //Long malId, Long score, AnimeEntryStatus status
 
                 //Anime animee = dataStore.findAnimeByMalId(45l);
                 //listAnimeEntries.add(new AnimeEntry(77l, 10l, AnimeEntryStatus.COMPLETED));
                 user.setAnimeEntries(listAnimeEntries);
-                Utils.showSortedDouble(textAnalyzer.recommendToUser(user, dataStore));
+                Utils.showSortedFloat(textAnalyzer.recommendToUser(user));
         }
 }

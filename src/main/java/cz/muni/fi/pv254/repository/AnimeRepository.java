@@ -20,13 +20,12 @@ public class AnimeRepository {
     @Inject
     DbAnimeRepository dbAnimeRepository;
 
-    public AnimeRepository(){
+    public AnimeRepository() {
     }
 
     public Anime create(final Anime entity) throws Exception {
         updateGenres(entity);
         updateDifferenceVector(entity);
-        updateDescriptionSimilarityVector(entity);
         return convertToAnime(dbAnimeRepository.create(entity.getDbAnime()));
     }
 
@@ -37,7 +36,6 @@ public class AnimeRepository {
     public Anime update(final Anime entity) {
         updateGenres(entity);
         updateDifferenceVector(entity);
-        updateDescriptionSimilarityVector(entity);
         DbAnime dbAnime = dbAnimeRepository.update(entity.getDbAnime());
         entity.setDbAnime(dbAnime);
         return dbAnime == null ? null : entity;
@@ -59,14 +57,12 @@ public class AnimeRepository {
     public List<Anime> batchCreate(List<Anime> entities) throws Exception {
         updateGenres(entities);
         updateDifferenceVector(entities);
-        updateDescriptionSimilarityVector(entities);
         return convert(dbAnimeRepository.batchCreate(reverseConvert(entities)));
     }
 
     public List<Anime> batchUpdate(List<Anime> entities) {
         updateGenres(entities);
         updateDifferenceVector(entities);
-        updateDescriptionSimilarityVector(entities);
         return convert(dbAnimeRepository.batchUpdate(reverseConvert(entities)));
     }
 
@@ -102,13 +98,5 @@ public class AnimeRepository {
 
     private void updateDifferenceVector(Anime entity) {
         entity.getDbAnime().setDifferenceVectorAsString(entity.getDifferenceVector());
-    }
-
-    private void updateDescriptionSimilarityVector(List<Anime> entities) {
-        entities.forEach(this::updateDescriptionSimilarityVector);
-    }
-
-    private void updateDescriptionSimilarityVector(Anime entity) {
-        entity.getDbAnime().setDescriptionSimilarityVectorAsString(entity.getDescriptionSimilarityVector());
     }
 }
